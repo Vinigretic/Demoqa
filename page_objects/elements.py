@@ -1,8 +1,11 @@
+import random
+
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.common.by import By
 
 from data_tests.text_box_data import PersonFactory
 from page_objects.base_page import BasePage
+from page_objects.main_page import MainPage
 
 
 class TextBoxPage(BasePage):
@@ -81,7 +84,7 @@ class TextBoxPage(BasePage):
         return 'border' not in created_text_block.get_attribute('class')
 
     def is_email_field_invalid(self):
-        email =  self.element_is_visible(self.Email)
+        email = self.element_is_visible(self.Email)
         return "field-error" in email.get_attribute('class')
 
     def is_result_full_name_visible(self):
@@ -104,3 +107,39 @@ class TextBoxPage(BasePage):
             return True
         except NoSuchElementException:
             return False
+
+
+class CheckBoxPage(BasePage):
+    CheckBoxButton = (By.XPATH, "//span[contains(text(), 'Check Box')]")
+    CheckBoxList = (By.XPATH, "//span[@class='rct-title']")
+    ExpandAllButton = (By.XPATH, "//button[@class='rct-option rct-option-expand-all']")
+    ClickedCheckBoxList = (By.CSS_SELECTOR, "svg[class='rct-icon rct-icon-check']")
+    ClickedCheckBoxTitle = (By.XPATH, ".//ancestor::span[@class='rct-text']")
+    # ClickedCheckBoxTitle = (By.XPATH, ".//ancestor::span[@class='rct-text']//span[@class='rct-title']")
+    OutputResult = (By.XPATH, "//span[@class='text-success']")
+
+    def go_to_check_box(self):
+        self.element_is_clickable(self.CheckBoxButton).click()
+
+    def open_checkboxes_list(self):
+        self.element_is_visible(self.ExpandAllButton).click()
+
+    def click_checkbox_random(self):
+        checkboxes_list = self.elements_are_visible(self.CheckBoxList)
+        for i in range(20):
+            checkbox = checkboxes_list[random.randint(1, len(checkboxes_list) - 1)]
+            self.driver.execute_script("arguments[0].scrollIntoView();", checkbox)
+            checkbox.click()
+
+    def get_clicked_checkbox(self):
+        clicked_list = self.elements_are_visible(self.ClickedCheckBoxList)
+        title_lists = [title_item.find_element(*self.ClickedCheckBoxTitle).text for title_item in clicked_list]
+        return str(title_lists).replace(' ', '').replace('.doc', '').lower()
+
+    def get_output_result(self):
+        results = self.elements_are_visible(self.OutputResult)
+        title_results = [item.text for item in results]
+        return str(title_results).replace(' ', '').lower()
+
+
+

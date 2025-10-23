@@ -1,3 +1,5 @@
+import time
+
 import pytest
 
 from data_tests.text_box_data import *
@@ -17,10 +19,10 @@ class TestMainPage:
 
 class TestElementsPage:
     class TestTextBoxPageFillForm(BaseTestPage):
-        # def test_go_to_text_box(self, driver):
-        #     self.text_box_page_create(driver)
-        #     assert "text-box" in driver.current_url.lower()
-        #
+        def test_go_to_text_box(self, driver):
+            self.text_box_page_create(driver)
+            assert "text-box" in driver.current_url.lower()
+
         # def test_text_box_submit_form(self, driver):
         #     text_box = self.text_box_page_create(driver)
         #     full_name, email, current_address, permanent_address = text_box.text_box_submit_form()
@@ -149,3 +151,18 @@ class TestElementsPage:
             page.text_box_submit_form(person)
 
             assert not page.is_result_permanent_address_visible(), f"The Full name - {invalid_permanent_address} was not processed as invalid."
+
+    class TestCheckBoxPageTransition(BaseTestPage):
+        def test_go_to_check_box(self, driver):
+            self.check_box_page_create(driver)
+            assert "checkbox" in driver.current_url.lower()
+
+    class TestCheckBoxPageCheckboxClick(BaseTestPage):
+        def test_get_all_checkboxes(self, driver):
+            checkbox = self.check_box_page_create(driver)
+            checkbox.open_checkboxes_list()
+            checkbox.click_checkbox_random()
+            checkbox.get_clicked_checkbox()
+            checkbox.get_output_result()
+
+            assert checkbox.get_clicked_checkbox() == checkbox.get_output_result(), "The checkboxes are not clicked"

@@ -1,4 +1,4 @@
-from page_objects.elements import TextBoxPage
+from page_objects.elements import *
 
 
 class BaseTestPage:
@@ -12,3 +12,9 @@ class BaseTestPage:
         page = self.text_box_page_create(driver)
         page.text_box_submit_form(person)
         return page.get_info_from_text_box_form()
+
+    def check_box_page_create(self, driver):
+        check_box_page = CheckBoxPage(driver, "https://demoqa.com/elements")
+        check_box_page.open()
+        check_box_page.go_to_check_box()
+        return check_box_page
