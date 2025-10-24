@@ -142,4 +142,22 @@ class CheckBoxPage(BasePage):
         return str(title_results).replace(' ', '').lower()
 
 
+class RadioButtonPage(BasePage):
+    RadioButton = (By.XPATH, "//span[contains(text(), 'Radio Button')]")
+    YesRadio = (By.CSS_SELECTOR, "label[for='yesRadio']")
+    ImpressiveRadio = (By.CSS_SELECTOR, "label[for='impressiveRadio']")
+    NoRadio = (By.CSS_SELECTOR, "label[for='noRadio']")
+    ResultText = (By.XPATH, "//p[@class='mt-3']")
 
+    def go_to_radio_button(self):
+        self.element_is_clickable(self.RadioButton).click()
+
+    def click_radio_button(self, locator):
+        self.safe_click(locator)
+
+    def get_result_text(self):
+        try:
+            result = self.element_is_visible(self.ResultText).text
+            return result.split()[-1]
+        except (TimeoutException):
+            return ''
