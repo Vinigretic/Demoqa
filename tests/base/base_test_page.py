@@ -44,3 +44,8 @@ class BaseTestPage:
         page = self.text_box_get_page(driver)
         page.text_box_submit_form(person)
         return page.get_info_from_text_box_form()
+
+    def web_table_get_page(self, driver):
+        web_table_page = self.get_page(WebTablePage, driver)
+        web_table_page.go_to_web_table_page()
+        return web_table_page

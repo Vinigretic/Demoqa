@@ -1,9 +1,11 @@
 import random
-
+import time
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.select import Select
 
 from data_tests.text_box_data import PersonFactory
+from generator.web_table_generator import generated_person_web_table
 from page_objects.base_page import BasePage
 from page_objects.main_page import MainPage
 
@@ -161,3 +163,101 @@ class RadioButtonPage(BasePage):
             return result.split()[-1]
         except (TimeoutException):
             return ''
+
+
+class WebTablePage(BasePage):
+    WebTableButton = (By.XPATH, "//span[contains(text(), 'Web Tables')]")
+    AddPersonButton = (By.ID, "addNewRecordButton")
+    FirstName = (By.XPATH, "//input[@id='firstName']")
+    LastName = (By.XPATH, "//input[@id='lastName']")
+    Email = (By.XPATH, "//input[@id='userEmail']")
+    Age = (By.XPATH, "//input[@id='age']")
+    Salary = (By.XPATH, "//input[@id='salary']")
+    Department = (By.XPATH, "//input[@id='department']")
+    RegisterFormSubmitButton = (By.XPATH, "//button[@id='submit']")
+    FullPeopleList = (By.XPATH, "//div[@class='rt-tr-group']")
+    SearchField = (By.XPATH, "//input[@id='searchBox']")
+    EditButton = (By.XPATH, "//span[@title='Edit']")
+    DeleteButton = (By.XPATH, "//span[@title='Delete']")
+    NoRowsFound = (By.XPATH, "//div[@class='rt-noData']")
+    DropdownPage = (By.XPATH, "//select[@aria-label='rows per page']")
+
+    def go_to_web_table_page(self):
+        self.scroll_to_element(self.WebTableButton)
+        self.element_is_clickable(self.WebTableButton).click()
+
+    def click_add_person_button(self):
+        self.safe_click(self.AddPersonButton)
+
+    def add_person_form_submit(self):
+        person = generated_person_web_table()
+        self.element_is_visible(self.FirstName).send_keys(person.first_name)
+        self.element_is_visible(self.LastName).send_keys(person.last_name)
+        self.element_is_visible(self.Email).send_keys(person.email)
+        self.element_is_visible(self.Age).send_keys(person.age)
+        self.element_is_visible(self.Salary).send_keys(person.salary)
+        self.element_is_visible(self.Department).send_keys(person.department)
+        self.safe_click(self.RegisterFormSubmitButton)
+
+        return [person.first_name, person.last_name, str(person.age), person.email, str(person.salary),
+                person.department.strip()]
+
+    def add_several_people(self, count=3):
+        people_list = []
+        for i in range(count):
+            self.click_add_person_button()
+            people_list.append(self.add_person_form_submit())
+        return people_list
+
+    def search_person(self, person_field):
+        self.element_is_clickable(self.SearchField).click()
+        self.element_is_visible(self.SearchField).send_keys(person_field)
+
+    def update_person_info(self, new_value_field, field_name):
+        fields_name = {
+            'FirstName': self.FirstName,
+            'LastName': self.LastName,
+            'Email': self.Email,
+            'Age': self.Age,
+            'Salary': self.Salary,
+            'Department': self.Department
+        }
+
+        self.element_is_visible(self.EditButton).click()
+        self.element_is_visible(fields_name[field_name]).clear()
+        self.element_is_visible(fields_name[field_name]).send_keys(new_value_field)
+        self.safe_click(self.RegisterFormSubmitButton)
+
+    def check_person(self):
+        full_people_list = self.elements_are_visible(self.FullPeopleList)
+        return [person.text.splitlines() for person in full_people_list]
+
+    def get_field_from_filtered_row(self, field_index):
+        rows = self.elements_are_visible(self.FullPeopleList)
+        for row in rows:
+            cells = row.find_elements(By.CSS_SELECTOR, "div.rt-td")
+            values = [cell.text.strip() for cell in cells if cell.text.strip()]
+            if values:
+                return values[field_index]
+        return ""
+
+    def is_person_present(self, value):
+        people = self.check_person()
+        for person in people:
+            if value in person:
+                return person
+        return None
+
+    def delete_person(self):
+        self.element_is_clickable(self.DeleteButton).click()
+
+    def check_delete_person(self):
+        return self.element_is_presence(self.NoRowsFound).text
+
+    def select_count_rows(self, count=5):
+        self.scroll_to_element(self.DropdownPage)
+        dropdown = Select(self.element_is_visible(self.DropdownPage))
+        dropdown.select_by_value(str(count))
+
+    def check_selected_rows(self):
+        return len(self.check_person())
