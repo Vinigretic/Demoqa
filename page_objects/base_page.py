@@ -1,4 +1,5 @@
 from selenium.common import ElementClickInterceptedException
+from selenium.webdriver import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait as wait
 
@@ -45,3 +46,18 @@ class BasePage:
         element = self.element_is_presence(locator, timeout)
         self.driver.execute_script("arguments[0].scrollIntoView();",element)
         return element
+
+    def action_double_click(self, locator, timeout=10):
+        element = self.element_is_visible(locator, timeout)
+        action = ActionChains(self.driver)
+        action.double_click(element).perform()
+
+    def action_right_click(self, locator, timeout=10):
+        element = self.element_is_visible(locator, timeout)
+        action = ActionChains(self.driver)
+        action.context_click(element).perform()
+
+    def js_right_click(self, locator, timeout=10):
+        element = self.element_is_visible(locator, timeout)
+        self.driver.execute_script("arguments[0].dispatchEvent(new MouseEvent('contextmenu', {bubbles: true}));",
+                                   element)

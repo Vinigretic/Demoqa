@@ -10,6 +10,7 @@ from page_objects.base_page import BasePage
 from page_objects.main_page import MainPage
 
 
+
 class TextBoxPage(BasePage):
     TextBoxButton = (By.XPATH, "//span[contains(text(), 'Text Box')]")
     FullName = (By.CSS_SELECTOR, "#userName")
@@ -261,3 +262,39 @@ class WebTablePage(BasePage):
 
     def check_selected_rows(self):
         return len(self.check_person())
+
+class ButtonsPage(BasePage):
+    ButtonsButton = (By.XPATH, "//span[contains(text(), 'Buttons')]")
+    DoubleClickButton = (By.ID, "doubleClickBtn")
+    RightClickButton = (By.ID, "rightClickBtn")
+    ClickButton = (By.XPATH, "//button[@class='btn btn-primary' and text()='Click Me']")
+    DoubleClickMessage = (By.ID, "doubleClickMessage")
+    RightClickMessage = (By.ID, "rightClickMessage")
+    ClickMessage = (By.ID, "dynamicClickMessage")
+
+
+    def go_to_buttons_page(self):
+        self.scroll_to_element(self.ButtonsButton)
+        self.element_is_clickable(self.ButtonsButton).click()
+
+    def double_click_button(self):
+        self.action_double_click(self.DoubleClickButton)
+
+    def right_click_button(self):
+        # self.action_right_click(self.RightClickButton) # does not work as intended
+        self.js_right_click(self.RightClickButton)
+
+    def click_button(self):
+        self.safe_click(self.ClickButton)
+
+    def get_message_after_click(self, action):
+        actions = {
+            'double': self.DoubleClickMessage,
+            'right': self.RightClickMessage,
+            'click': self.ClickMessage,
+        }
+        return self.element_is_presence(actions[action]).text
+
+
+
+

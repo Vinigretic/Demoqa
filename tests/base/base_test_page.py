@@ -49,3 +49,8 @@ class BaseTestPage:
         web_table_page = self.get_page(WebTablePage, driver)
         web_table_page.go_to_web_table_page()
         return web_table_page
+
+    def buttons_get_page(self, driver):
+        buttons_page = self.get_page(ButtonsPage, driver)
+        buttons_page.go_to_buttons_page()
+        return buttons_page

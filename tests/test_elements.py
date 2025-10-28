@@ -1,4 +1,5 @@
 import random
+import time
 
 import pytest
 
@@ -237,3 +238,26 @@ class TestElementsPage:
             web_table_page = self.web_table_get_page(driver)
             web_table_page.select_count_rows(str(count))
             assert count == web_table_page.check_selected_rows(), "The numbers rows in the table has not been changed."
+
+    class TestButtonPage(BaseTestPage):
+        def test_go_to_buttons_page(self, driver):
+            self.buttons_get_page(driver)
+            assert "buttons" in driver.current_url.lower(), 'The transition to the buttons page failed'
+
+        def test_double_click_button(self, driver):
+            buttons_page = self.buttons_get_page(driver)
+            buttons_page.double_click_button()
+            assert buttons_page.get_message_after_click(
+                'double') == 'You have done a double click', "The double click button was not pressed"
+
+        def test_right_click_button(self, driver):
+            buttons_page = self.buttons_get_page(driver)
+            buttons_page.right_click_button()
+            assert buttons_page.get_message_after_click(
+                'right') == 'You have done a right click', "The right click button was not pressed"
+
+        def test_click_button(self, driver):
+            buttons_page = self.buttons_get_page(driver)
+            buttons_page.click_button()
+            assert buttons_page.get_message_after_click(
+                'click') == 'You have done a dynamic click', "The click button was not pressed"
