@@ -1,5 +1,7 @@
 import random
 import time
+
+import requests
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
@@ -8,7 +10,6 @@ from data_tests.text_box_data import PersonFactory
 from generator.web_table_generator import generated_person_web_table
 from page_objects.base_page import BasePage
 from page_objects.main_page import MainPage
-
 
 
 class TextBoxPage(BasePage):
@@ -263,6 +264,7 @@ class WebTablePage(BasePage):
     def check_selected_rows(self):
         return len(self.check_person())
 
+
 class ButtonsPage(BasePage):
     ButtonsButton = (By.XPATH, "//span[contains(text(), 'Buttons')]")
     DoubleClickButton = (By.ID, "doubleClickBtn")
@@ -271,7 +273,6 @@ class ButtonsPage(BasePage):
     DoubleClickMessage = (By.ID, "doubleClickMessage")
     RightClickMessage = (By.ID, "rightClickMessage")
     ClickMessage = (By.ID, "dynamicClickMessage")
-
 
     def go_to_buttons_page(self):
         self.scroll_to_element(self.ButtonsButton)
@@ -296,5 +297,32 @@ class ButtonsPage(BasePage):
         return self.element_is_presence(actions[action]).text
 
 
+class LinksPage(BasePage):
+    LinksButton = (By.XPATH, "//span[contains(text(), 'Links')]")
+    LinkHome = (By.ID, "simpleLink")
+    LinkDynamicHome = (By.ID, "dynamicLink")
+    LinkResponse = (By.ID, "linkResponse")
+    BrokenLinks = {
+        "created": (By.ID, "created"),
+        "no_content": (By.ID, "no-content"),
+        "moved": (By.ID, "moved"),
+        "bad_request": (By.ID, "bad-request"),
+        "unauthorized": (By.ID, "unauthorized"),
+        "forbidden": (By.ID, "forbidden"),
+        "not_found": (By.ID, "invalid-url"),
+    }
 
+    def go_to_links_page(self):
+        self.scroll_to_element(self.LinksButton)
+        self.element_is_clickable(self.LinksButton).click()
 
+    def check_link_open_new_tab(self, locator):
+        self.safe_click(locator)
+        self.driver.switch_to.window(self.driver.window_handles[-1])
+        link_url = self.driver.current_url
+        response = requests.get(link_url)
+        return response.status_code, link_url
+
+    def check_api_link(self, locator):
+        self.safe_click(self.BrokenLinks[locator])
+        return self.element_is_visible(self.LinkResponse).text

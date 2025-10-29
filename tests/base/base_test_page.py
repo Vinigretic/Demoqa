@@ -54,3 +54,8 @@ class BaseTestPage:
         buttons_page = self.get_page(ButtonsPage, driver)
         buttons_page.go_to_buttons_page()
         return buttons_page
+
+    def links_get_page(self, driver):
+        links_page = self.get_page(LinksPage, driver)
+        links_page.go_to_links_page()
+        return links_page

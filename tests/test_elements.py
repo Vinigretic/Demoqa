@@ -5,7 +5,7 @@ import pytest
 
 from data_tests.text_box_data import *
 from generator.text_box_generator import *
-from page_objects.elements import RadioButtonPage
+from page_objects.elements import RadioButtonPage, LinksPage
 from page_objects.main_page import MainPage
 from tests.base.base_test_page import BaseTestPage
 
@@ -239,7 +239,7 @@ class TestElementsPage:
             web_table_page.select_count_rows(str(count))
             assert count == web_table_page.check_selected_rows(), "The numbers rows in the table has not been changed."
 
-    class TestButtonPage(BaseTestPage):
+    class TestButtonsPage(BaseTestPage):
         def test_go_to_buttons_page(self, driver):
             self.buttons_get_page(driver)
             assert "buttons" in driver.current_url.lower(), 'The transition to the buttons page failed'
@@ -261,3 +261,23 @@ class TestElementsPage:
             buttons_page.click_button()
             assert buttons_page.get_message_after_click(
                 'click') == 'You have done a dynamic click', "The click button was not pressed"
+
+    class TestLinksPage(BaseTestPage):
+        def test_go_to_links_page(self, driver):
+            self.links_get_page(driver)
+            assert "links" in driver.current_url.lower(), 'The transition to the links page failed'
+
+
+        @pytest.mark.parametrize('locator', (LinksPage.LinkHome, LinksPage.LinkDynamicHome))
+        def test_check_link_open_new_tab(self, driver, locator):
+            links_page = self.links_get_page(driver)
+            statuscode, link_url = links_page.check_link_open_new_tab(locator)
+            assert statuscode == 200
+            assert link_url == driver.current_url.lower(), 'The transition to the home page failed'
+
+        @pytest.mark.parametrize('locator, expected_status',
+                                 (("created", "201"), ("no_content", "204"), ("moved", "301"), ("bad_request", "400"),
+                                  ("unauthorized", "401"), ("forbidden", "403"), ("not_found", "404")))
+        def test_check_api_links(self, driver, locator, expected_status):
+            links_page = self.links_get_page(driver)
+            assert f"staus {expected_status}" in links_page.check_api_link(locator).lower(), 'The link works'
