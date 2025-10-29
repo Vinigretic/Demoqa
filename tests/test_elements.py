@@ -1,3 +1,4 @@
+import os
 import random
 import time
 
@@ -5,6 +6,7 @@ import pytest
 
 from data_tests.text_box_data import *
 from generator.text_box_generator import *
+from generator.upload_download_generator import FileFactory
 from page_objects.elements import RadioButtonPage, LinksPage
 from page_objects.main_page import MainPage
 from tests.base.base_test_page import BaseTestPage
@@ -20,18 +22,19 @@ class TestMainPage:
 
 class TestElementsPage:
     class TestTextBoxPageFillForm(BaseTestPage):
+
         def test_go_to_text_box(self, driver):
             self.text_box_get_page(driver)
             assert "text-box" in driver.current_url.lower()
 
-        # def test_text_box_submit_form(self, driver):
-        #     text_box = self.text_box_get_page(driver)
-        #     full_name, email, current_address, permanent_address = text_box.text_box_submit_form()
-        #     created_full_name, created_email, created_current_address, created_permanent_address = text_box.get_info_from_text_box_form()
-        #     assert full_name == created_full_name, 'The full name does not match'
-        #     assert email == created_email, 'The email does not match'
-        #     assert current_address == created_current_address, 'The current_address does not match'
-        #     assert permanent_address == created_permanent_address, 'The permanent_address does not match'
+            # def test_text_box_submit_form(self, driver):
+            #     text_box = self.text_box_get_page(driver)
+            #     full_name, email, current_address, permanent_address = text_box.text_box_submit_form()
+            #     created_full_name, created_email, created_current_address, created_permanent_address = text_box.get_info_from_text_box_form()
+            #     assert full_name == created_full_name, 'The full name does not match'
+            #     assert email == created_email, 'The email does not match'
+            #     assert current_address == created_current_address, 'The current_address does not match'
+            #     assert permanent_address == created_permanent_address, 'The permanent_address does not match'
 
         def assert_text_box_result(self, person, result):
             if person.full_name:
@@ -43,7 +46,8 @@ class TestElementsPage:
             if person.permanent_address:
                 assert person.permanent_address.replace("\n", " ") == result[3], "Permanent address mismatch"
 
-        # Fill all fields
+            # Fill all fields
+
         @pytest.mark.positive
         def test_all_fields_filled(self, driver):
             person = person_all_fields()
@@ -75,6 +79,7 @@ class TestElementsPage:
             # The form does not send and the block does not appear
             assert page.is_result_block_visible(), f"The Form was sent with empty fields."
 
+
     class TestTextBoxPageEmailField(BaseTestPage):
         @pytest.mark.positive
         @pytest.mark.parametrize("valid_email", email_categories['valid'])
@@ -96,6 +101,7 @@ class TestElementsPage:
             # The email field should be highlighted (for ex., class 'field-error')
             assert page.is_email_field_invalid(), f"The Email - {invalid_email} was not processed as invalid."
 
+
     class TestTextBoxPageFullNameField(BaseTestPage):
         @pytest.mark.positive
         @pytest.mark.parametrize("valid_full_name", full_name_categories['valid'] + full_name_categories['security'])
@@ -114,6 +120,7 @@ class TestElementsPage:
             page.text_box_submit_form(person)
 
             assert not page.is_result_full_name_visible(), f"The Full name - {invalid_full_name} was not processed as invalid."
+
 
     class TestTextBoxPageCurrentAddressField(BaseTestPage):
         @pytest.mark.positive
@@ -134,6 +141,7 @@ class TestElementsPage:
 
             assert not page.is_result_current_address_visible(), f"The Full name - {invalid_current_address} was not processed as invalid."
 
+
     class TestTextBoxPagePermanentAddressField(BaseTestPage):
         @pytest.mark.positive
         @pytest.mark.parametrize("valid_permanent_address", address_cases['valid'] + address_cases['security'])
@@ -153,10 +161,12 @@ class TestElementsPage:
 
             assert not page.is_result_permanent_address_visible(), f"The Full name - {invalid_permanent_address} was not processed as invalid."
 
+
     class TestCheckBoxPageTransition(BaseTestPage):
         def test_go_to_check_box(self, driver):
             self.check_box_get_page(driver)
             assert "checkbox" in driver.current_url.lower()
+
 
     class TestCheckBoxPageCheckboxClick(BaseTestPage):
         def test_get_all_checkboxes(self, driver):
@@ -167,6 +177,7 @@ class TestElementsPage:
             checkbox.get_output_result()
 
             assert checkbox.get_clicked_checkbox() == checkbox.get_output_result(), "The checkboxes are not clicked"
+
 
     class TestRadioButtonPage(BaseTestPage):
         def test_go_to_radio_button(self, driver):
@@ -183,6 +194,7 @@ class TestElementsPage:
             radio_button.click_radio_button(radio_locator)
             result = radio_button.get_result_text()
             assert result == expected_text, 'The radio button NO is not clicked'
+
 
     class TestWebTablePage(BaseTestPage):
         def test_go_to_web_table_page(self, driver):
@@ -239,6 +251,7 @@ class TestElementsPage:
             web_table_page.select_count_rows(str(count))
             assert count == web_table_page.check_selected_rows(), "The numbers rows in the table has not been changed."
 
+
     class TestButtonsPage(BaseTestPage):
         def test_go_to_buttons_page(self, driver):
             self.buttons_get_page(driver)
@@ -262,11 +275,11 @@ class TestElementsPage:
             assert buttons_page.get_message_after_click(
                 'click') == 'You have done a dynamic click', "The click button was not pressed"
 
+
     class TestLinksPage(BaseTestPage):
         def test_go_to_links_page(self, driver):
             self.links_get_page(driver)
             assert "links" in driver.current_url.lower(), 'The transition to the links page failed'
-
 
         @pytest.mark.parametrize('locator', (LinksPage.LinkHome, LinksPage.LinkDynamicHome))
         def test_check_link_open_new_tab(self, driver, locator):
@@ -281,3 +294,30 @@ class TestElementsPage:
         def test_check_api_links(self, driver, locator, expected_status):
             links_page = self.links_get_page(driver)
             assert f"staus {expected_status}" in links_page.check_api_link(locator).lower(), 'The link works'
+
+
+    class TestUploadDownloadPage(BaseTestPage):
+        def test_go_to_upload_download_page(self, driver):
+            self.upload_download_get_page(driver)
+            assert "upload-download" in driver.current_url.lower(), 'The transition to the Upload and Download page failed'
+
+        @pytest.mark.parametrize("method_name", ("create_temp_txt", "create_temp_json", "create_temp_csv"))
+        def test_upload_file(self, driver, method_name):
+            upload_download_page = self.upload_download_get_page(driver)
+            create_method = getattr(FileFactory, method_name)
+            file_name = create_method()
+            try:
+                uploaded_file_path = upload_download_page.upload_file(file_name).split("\\")[-1]
+                assert uploaded_file_path == file_name.split("\\")[-1], f"The file {file_name} was not uploaded"
+            finally:
+                FileFactory.delete_file(file_name)
+
+        def test_download_file(self, driver_for_download_file):
+            driver, download_dir = driver_for_download_file
+            upload_download_page = self.upload_download_get_page(driver)
+            upload_download_page.download_file()
+            upload_download_page.wait_for_file(download_dir)
+            downloaded_file = upload_download_page.wait_for_file(download_dir)
+            file_path = os.path.join(download_dir,
+                                     downloaded_file)  # C:\Users\vbaka\AppData\Local\Temp\tmpofl9clj2\sampleFile.jpeg
+            assert os.path.exists(file_path), f"File {downloaded_file} was not found in {download_dir}"

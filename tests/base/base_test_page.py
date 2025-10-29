@@ -59,3 +59,8 @@ class BaseTestPage:
         links_page = self.get_page(LinksPage, driver)
         links_page.go_to_links_page()
         return links_page
+
+    def upload_download_get_page(self, driver):
+        upload_download_page = self.get_page(UploadDownloadPage, driver)
+        upload_download_page.go_to_upload_download_page()
+        return upload_download_page

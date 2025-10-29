@@ -1,3 +1,4 @@
+import os
 import random
 import time
 
@@ -326,3 +327,35 @@ class LinksPage(BasePage):
     def check_api_link(self, locator):
         self.safe_click(self.BrokenLinks[locator])
         return self.element_is_visible(self.LinkResponse).text
+
+
+class UploadDownloadPage(BasePage):
+    UploadDownloadButton = (By.XPATH, "//span[contains(text(), 'Upload and Download')]")
+    UploadFile = (By.ID, "uploadFile")
+    UploadedFilePath = (By.ID, "uploadedFilePath")
+    DownloadButton = (By.ID, "downloadButton")
+
+
+    def go_to_upload_download_page(self):
+        self.scroll_to_element(self.UploadDownloadButton)
+        self.element_is_clickable(self.UploadDownloadButton).click()
+
+    def upload_file(self, file_name):
+        self.element_is_presence(self.UploadFile).send_keys(file_name)
+        return self.element_is_presence(self.UploadedFilePath).text
+
+    def download_file(self):
+        self.element_is_clickable(self.DownloadButton).click()
+
+    def wait_for_file(self, folder, timeout=10):
+        # wait for the file to appear in the specified folder
+        end_time = time.time() + timeout
+        while time.time() < end_time:
+            files = os.listdir(folder) # get list of files in the specified folder
+            if files:
+                return files[0]
+            time.sleep(1)
+
+
+
+
