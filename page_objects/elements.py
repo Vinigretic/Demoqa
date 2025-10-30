@@ -6,6 +6,7 @@ import requests
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.select import Select
+from selenium.webdriver.support.wait import WebDriverWait
 
 from data_tests.text_box_data import PersonFactory
 from generator.web_table_generator import generated_person_web_table
@@ -356,6 +357,40 @@ class UploadDownloadPage(BasePage):
                 return files[0]
             time.sleep(1)
 
+class DynamicPropertiesPage(BasePage):
+    DynamicPropertiesButton = (By.XPATH, "//span[contains(text(), 'Dynamic Properties')]")
+    EnableButton = (By.ID, "enableAfter")
+    VisibleButton = (By.ID, "visibleAfter")
+    ColorChangeButton = (By.ID, "colorChange")
 
+    def go_to_dynamic_properties_page(self):
+        self.scroll_to_element(self.DynamicPropertiesButton)
+        self.element_is_clickable(self.DynamicPropertiesButton).click()
 
+    def check_color_change_button(self, timeout=5):
+        button = self.element_is_presence(self.ColorChangeButton)
+        color_before = button.value_of_css_property(property_name='color')
+        try:
+            WebDriverWait(self.driver, timeout).until(
+                lambda d: button.value_of_css_property(property_name='color') != color_before
+            )
+        except TimeoutException:
+            pass
+        color_after = button.value_of_css_property(property_name='color')
+        return color_before, color_after
+
+    def check_enable_button(self):
+        try:
+            self.scroll_to_element(self.EnableButton)
+            self.element_is_clickable(self.EnableButton, timeout=5).click()
+        except TimeoutException:
+            return False
+        return True
+
+    def check_visible_button(self, timeout=5):
+        try:
+            self.element_is_visible(self.VisibleButton, timeout)
+        except TimeoutException:
+            return False
+        return True
 

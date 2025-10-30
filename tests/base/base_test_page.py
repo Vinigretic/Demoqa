@@ -64,3 +64,8 @@ class BaseTestPage:
         upload_download_page = self.get_page(UploadDownloadPage, driver)
         upload_download_page.go_to_upload_download_page()
         return upload_download_page
+
+    def dynamic_properties_get_page(self, driver):
+        dynamic_properties_page = self.get_page(DynamicPropertiesPage, driver)
+        dynamic_properties_page.go_to_dynamic_properties_page()
+        return dynamic_properties_page

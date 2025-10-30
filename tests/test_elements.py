@@ -7,7 +7,7 @@ import pytest
 from data_tests.text_box_data import *
 from generator.text_box_generator import *
 from generator.upload_download_generator import FileFactory
-from page_objects.elements import RadioButtonPage, LinksPage
+from page_objects.elements import RadioButtonPage, LinksPage, DynamicPropertiesPage
 from page_objects.main_page import MainPage
 from tests.base.base_test_page import BaseTestPage
 
@@ -321,3 +321,22 @@ class TestElementsPage:
             file_path = os.path.join(download_dir,
                                      downloaded_file)  # C:\Users\vbaka\AppData\Local\Temp\tmpofl9clj2\sampleFile.jpeg
             assert os.path.exists(file_path), f"File {downloaded_file} was not found in {download_dir}"
+
+    class TestDynamicProperties(BaseTestPage):
+        def test_go_to_dynamic_properties_page(self, driver):
+            self.dynamic_properties_get_page(driver)
+            assert "dynamic-properties" in driver.current_url.lower(), 'The transition to the Dynamic Properties page failed'
+
+
+        def test_check_color_change_button(self, driver):
+            dynamic_properties_page = self.dynamic_properties_get_page(driver)
+            color_before, color_after = dynamic_properties_page.check_color_change_button()
+            assert color_before != color_after, "The color button was not changed."
+
+        def test_check_enable_button(self, driver):
+            dynamic_properties_page = self.dynamic_properties_get_page(driver)
+            assert dynamic_properties_page.check_enable_button(), "The enable button was not clickable."
+
+        def test_check_visible_button(self, driver):
+            dynamic_properties_page = self.dynamic_properties_get_page(driver)
+            assert dynamic_properties_page.check_visible_button(), "The visible button was not visible."
