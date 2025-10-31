@@ -1,8 +1,11 @@
 from page_objects.elements import *
+from page_objects.forms import *
 
 
 class BaseTestPage:
     ElementsPageUrl = "https://demoqa.com/elements"
+    FormsPageUrl = "https://demoqa.com/forms"
+
     # def text_box_page_create(self, driver):
     #     text_box_page = TextBoxPage(driver, self.ElementsPageUrl)
     #     text_box_page.open()
@@ -20,8 +23,9 @@ class BaseTestPage:
     #     check_box_page.go_to_check_box()
     #     return check_box_page
 
+    # Elements Page
     def get_page(self, page_class, driver):
-        page =  page_class(driver, self.ElementsPageUrl)
+        page = page_class(driver, self.ElementsPageUrl)
         page.open()
         return page
 
@@ -69,3 +73,14 @@ class BaseTestPage:
         dynamic_properties_page = self.get_page(DynamicPropertiesPage, driver)
         dynamic_properties_page.go_to_dynamic_properties_page()
         return dynamic_properties_page
+
+    # Forms Page
+    def get_forms_page(self, page_class, driver):
+        page = page_class(driver, self.FormsPageUrl)
+        page.open()
+        return page
+
+    def forms_get_page(self, driver):
+        forms_page = self.get_forms_page(FormsPage, driver)
+        forms_page.go_to_practice_form()
+        return forms_page

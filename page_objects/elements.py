@@ -11,7 +11,6 @@ from selenium.webdriver.support.wait import WebDriverWait
 from data_tests.text_box_data import PersonFactory
 from generator.web_table_generator import generated_person_web_table
 from page_objects.base_page import BasePage
-from page_objects.main_page import MainPage
 
 
 class TextBoxPage(BasePage):
@@ -379,10 +378,10 @@ class DynamicPropertiesPage(BasePage):
         color_after = button.value_of_css_property(property_name='color')
         return color_before, color_after
 
-    def check_enable_button(self):
+    def check_enable_button(self, timeout=5):
         try:
             self.scroll_to_element(self.EnableButton)
-            self.element_is_clickable(self.EnableButton, timeout=5).click()
+            self.element_is_clickable(self.EnableButton, timeout).click()
         except TimeoutException:
             return False
         return True
