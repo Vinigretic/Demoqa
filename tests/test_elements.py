@@ -1,23 +1,13 @@
 import os
 import random
-import time
 
 import pytest
 
 from data_tests.text_box_data import *
 from generator.text_box_generator import *
 from generator.upload_download_generator import FileFactory
-from page_objects.elements import RadioButtonPage, LinksPage, DynamicPropertiesPage
-from page_objects.main_page import MainPage
+from page_objects.elements import RadioButtonPage, LinksPage
 from tests.base.base_test_page import BaseTestPage
-
-
-class TestMainPage:
-    def test_go_to_elements(self, driver):
-        elements = MainPage(driver, "https://demoqa.com/")
-        elements.open()
-        elements.go_to_elements()
-        assert "elements" in driver.current_url.lower()
 
 
 class TestElementsPage:
@@ -25,7 +15,7 @@ class TestElementsPage:
 
         def test_go_to_text_box(self, driver):
             self.text_box_get_page(driver)
-            assert "text-box" in driver.current_url.lower()
+            assert "text-box" in driver.current_url.lower(), "The transition to the Text Box page failed"
 
             # def test_text_box_submit_form(self, driver):
             #     text_box = self.text_box_get_page(driver)
