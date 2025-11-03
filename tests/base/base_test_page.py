@@ -109,3 +109,8 @@ class BaseTestPage:
         alerts_page = self.get_alerts_frame_windows_page(AlertsPage, driver)
         alerts_page.go_to_alerts_page()
         return alerts_page
+
+    def frames_get_page(self, driver):
+        frames_page = self.get_alerts_frame_windows_page(FramesPage, driver)
+        frames_page.go_to_frames_page()
+        return frames_page

@@ -1,10 +1,9 @@
 import random
-import time
 
 from selenium.common import TimeoutException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
 from page_objects.base_page import BasePage
 
@@ -73,3 +72,25 @@ class AlertsPage(BasePage):
         alert.accept()
         result_message = self.element_is_presence(self.PromptResult).text
         return result_message, text
+
+
+class FramesPage(BasePage):
+    FramesButton = (By.XPATH, "//span[text()='Frames']")
+    FrameOne = (By.ID, "frame1")
+    FrameTwo = (By.ID, "frame2")
+    FrameSamplePageTitle = (By.ID, "sampleHeading")
+
+    def go_to_frames_page(self):
+        self.safe_click(self.FramesButton)
+
+    def check_frame(self, locator):
+        try:
+            frame = self.element_is_presence(locator)
+            width = frame.get_attribute("width")
+            height = frame.get_attribute("height")
+            self.driver.switch_to.frame(frame)
+            frame_title = self.element_is_presence(self.FrameSamplePageTitle).text
+            self.driver.switch_to.default_content()
+            return width, height, frame_title
+        except TimeoutException:
+            return None
