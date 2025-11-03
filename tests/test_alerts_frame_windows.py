@@ -34,7 +34,6 @@ class TestAlertsFrameWindowsPage:
 
         @pytest.mark.positive
         def test_check_timer_alert_button(self, driver):
-            alert_page = self.alerts_get_page(driver)
             alert_text = alert_page.check_timer_alert_button()
             assert 'This alert appeared after 5 seconds' == alert_text, \
                 'The timer alert button was not appeared after 5 seconds or text does not match.'
@@ -67,3 +66,16 @@ class TestAlertsFrameWindowsPage:
             assert frames_page.check_frame(locator) is not None, "The frame does not exist"
             width_result, height_result, frame_title = frames_page.check_frame(locator)
             assert width == width_result and height == height_result and 'This is a sample page' == frame_title
+
+    class TestNestedFramesPage(BaseTestPage):
+        @pytest.mark.positive
+        def test_go_to_nested_frames_page(self, driver):
+            self.nested_frames_get_page(driver)
+            assert "nestedframes" in driver.current_url.lower(), 'The transition to the Nested frames page failed'
+
+        @pytest.mark.positive
+        def test_check_nested_frame(self, driver):
+            nested_frame_page = self.nested_frames_get_page(driver)
+            frame_parent_text, frame_child_text = nested_frame_page.check_nested_frame()
+            assert frame_parent_text == 'Parent frame', 'The parent frame does not exist'
+            assert frame_child_text == 'Child Iframe', 'The child frame does not exist'

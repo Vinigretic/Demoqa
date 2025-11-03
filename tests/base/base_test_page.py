@@ -114,3 +114,8 @@ class BaseTestPage:
         frames_page = self.get_alerts_frame_windows_page(FramesPage, driver)
         frames_page.go_to_frames_page()
         return frames_page
+
+    def nested_frames_get_page(self, driver):
+        nested_frames_page = self.get_alerts_frame_windows_page(NestedFramesPage, driver)
+        nested_frames_page.go_to_nested_frames_page()
+        return nested_frames_page

@@ -94,3 +94,34 @@ class FramesPage(BasePage):
             return width, height, frame_title
         except TimeoutException:
             return None
+
+
+class NestedFramesPage(BasePage):
+    NestedFramesButton = (By.XPATH, "//span[text()='Nested Frames']")
+    FrameParent = (By.ID, "frame1")
+    FrameChild = (By.CSS_SELECTOR, 'iframe[srcdoc="<p>Child Iframei</p>"]')
+    FrameParentText = (By.CSS_SELECTOR, 'body')
+    FrameChildText = (By.CSS_SELECTOR, 'p')
+
+    def go_to_nested_frames_page(self):
+        self.safe_click(self.NestedFramesButton)
+
+    def check_nested_frame(self):
+        frame_child_text = None
+        try:
+            parent_frame = self.element_is_presence(self.FrameParent)
+            self.driver.switch_to.frame(parent_frame)
+            frame_parent_text = self.element_is_presence(self.FrameParentText).text
+            try:
+                child_frame = self.element_is_presence(self.FrameChild)
+                self.driver.switch_to.frame(child_frame)
+                frame_child_text = self.element_is_presence(self.FrameChildText).text
+            except TimeoutException:
+                frame_child_text = None
+
+        except TimeoutException:
+            frame_parent_text = None
+        finally:
+            self.driver.switch_to.default_content()
+
+        return frame_parent_text, frame_child_text
