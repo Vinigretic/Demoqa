@@ -1,10 +1,14 @@
+from page_objects.alerts_frame_windows import *
 from page_objects.elements import *
 from page_objects.forms import *
+from page_objects.main_page import MainPage
 
 
 class BaseTestPage:
     ElementsPageUrl = "https://demoqa.com/elements"
     FormsPageUrl = "https://demoqa.com/forms"
+    AlertsFrameWindowsPageUrl = "https://demoqa.com/alertsWindows"
+    MainPageUrl = "https://demoqa.com/"
 
     # def text_box_page_create(self, driver):
     #     text_box_page = TextBoxPage(driver, self.ElementsPageUrl)
@@ -23,24 +27,29 @@ class BaseTestPage:
     #     check_box_page.go_to_check_box()
     #     return check_box_page
 
+    def get_main_page(self, driver):
+        page = MainPage(driver, self.MainPageUrl)
+        page.open()
+        return page
+
     # Elements Page
-    def get_page(self, page_class, driver):
+    def get_elements_page(self, page_class, driver):
         page = page_class(driver, self.ElementsPageUrl)
         page.open()
         return page
 
     def radio_button_get_page(self, driver):
-        radio_button_page = self.get_page(RadioButtonPage, driver)
+        radio_button_page = self.get_elements_page(RadioButtonPage, driver)
         radio_button_page.go_to_radio_button()
         return radio_button_page
 
     def check_box_get_page(self, driver):
-        check_box_page = self.get_page(CheckBoxPage, driver)
+        check_box_page = self.get_elements_page(CheckBoxPage, driver)
         check_box_page.go_to_check_box()
         return check_box_page
 
     def text_box_get_page(self, driver):
-        text_box_page = self.get_page(TextBoxPage, driver)
+        text_box_page = self.get_elements_page(TextBoxPage, driver)
         text_box_page.go_to_text_box()
         return text_box_page
 
@@ -50,27 +59,27 @@ class BaseTestPage:
         return page.get_info_from_text_box_form()
 
     def web_table_get_page(self, driver):
-        web_table_page = self.get_page(WebTablePage, driver)
+        web_table_page = self.get_elements_page(WebTablePage, driver)
         web_table_page.go_to_web_table_page()
         return web_table_page
 
     def buttons_get_page(self, driver):
-        buttons_page = self.get_page(ButtonsPage, driver)
+        buttons_page = self.get_elements_page(ButtonsPage, driver)
         buttons_page.go_to_buttons_page()
         return buttons_page
 
     def links_get_page(self, driver):
-        links_page = self.get_page(LinksPage, driver)
+        links_page = self.get_elements_page(LinksPage, driver)
         links_page.go_to_links_page()
         return links_page
 
     def upload_download_get_page(self, driver):
-        upload_download_page = self.get_page(UploadDownloadPage, driver)
+        upload_download_page = self.get_elements_page(UploadDownloadPage, driver)
         upload_download_page.go_to_upload_download_page()
         return upload_download_page
 
     def dynamic_properties_get_page(self, driver):
-        dynamic_properties_page = self.get_page(DynamicPropertiesPage, driver)
+        dynamic_properties_page = self.get_elements_page(DynamicPropertiesPage, driver)
         dynamic_properties_page.go_to_dynamic_properties_page()
         return dynamic_properties_page
 
@@ -80,7 +89,18 @@ class BaseTestPage:
         page.open()
         return page
 
-    def forms_get_page(self, driver):
+    def practice_form_get_page(self, driver):
         forms_page = self.get_forms_page(FormsPage, driver)
         forms_page.go_to_practice_form()
+        return forms_page
+
+    # AlertsFrameWindows Page
+    def get_alerts_frame_windows_page(self, page_class, driver):
+        page = page_class(driver, self.AlertsFrameWindowsPageUrl)
+        page.open()
+        return page
+
+    def browser_windows_get_page(self, driver):
+        forms_page = self.get_alerts_frame_windows_page(BrowserWindowsPage, driver)
+        forms_page.go_to_browser_windows_page()
         return forms_page
