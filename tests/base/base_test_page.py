@@ -101,6 +101,11 @@ class BaseTestPage:
         return page
 
     def browser_windows_get_page(self, driver):
-        forms_page = self.get_alerts_frame_windows_page(BrowserWindowsPage, driver)
-        forms_page.go_to_browser_windows_page()
-        return forms_page
+        browser_windows_page = self.get_alerts_frame_windows_page(BrowserWindowsPage, driver)
+        browser_windows_page.go_to_browser_windows_page()
+        return browser_windows_page
+
+    def alerts_get_page(self, driver):
+        alerts_page = self.get_alerts_frame_windows_page(AlertsPage, driver)
+        alerts_page.go_to_alerts_page()
+        return alerts_page
