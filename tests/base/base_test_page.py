@@ -119,3 +119,8 @@ class BaseTestPage:
         nested_frames_page = self.get_alerts_frame_windows_page(NestedFramesPage, driver)
         nested_frames_page.go_to_nested_frames_page()
         return nested_frames_page
+
+    def modal_dialogs_get_page(self, driver):
+        nested_frames_page = self.get_alerts_frame_windows_page(ModalDialogsPage, driver)
+        nested_frames_page.go_to_modal_dialogs_page()
+        return nested_frames_page

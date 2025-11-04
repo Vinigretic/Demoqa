@@ -125,3 +125,29 @@ class NestedFramesPage(BasePage):
             self.driver.switch_to.default_content()
 
         return frame_parent_text, frame_child_text
+
+
+class ModalDialogsPage(BasePage):
+    ModalDialogsButton = (By.XPATH, "//span[contains(text(), 'Modal Dialogs')]")
+    SmallModalButton = (By.ID, "showSmallModal")
+    LargeModalButton = (By.ID, "showLargeModal")
+    SmallModalTitle = (By.ID, "example-modal-sizes-title-sm")
+    LargeModalTitle = (By.ID, "example-modal-sizes-title-lg")
+    SmallModalCloseButton = (By.ID, "closeSmallModal")
+    LargeModalCloseButton = (By.ID, "closeLargeModal")
+
+    def go_to_modal_dialogs_page(self):
+        self.safe_click(self.ModalDialogsButton)
+
+    def check_modal(self, open, title, close):
+        self.element_is_clickable(open).click()
+        modal_title = self.element_is_visible(title).text
+        self.element_is_clickable(close).click()
+        modal_closed = True
+        try:
+            WebDriverWait(self.driver, 5).until(
+                EC.invisibility_of_element_located(title)
+            )
+        except TimeoutException:
+            modal_closed = False
+        return modal_title, modal_closed

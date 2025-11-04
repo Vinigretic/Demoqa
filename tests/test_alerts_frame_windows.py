@@ -1,6 +1,6 @@
 import pytest
 
-from page_objects.alerts_frame_windows import BrowserWindowsPage, FramesPage
+from page_objects.alerts_frame_windows import BrowserWindowsPage, FramesPage, ModalDialogsPage
 from tests.base.base_test_page import BaseTestPage
 
 
@@ -34,6 +34,7 @@ class TestAlertsFrameWindowsPage:
 
         @pytest.mark.positive
         def test_check_timer_alert_button(self, driver):
+            alert_page = self.alerts_get_page(driver)
             alert_text = alert_page.check_timer_alert_button()
             assert 'This alert appeared after 5 seconds' == alert_text, \
                 'The timer alert button was not appeared after 5 seconds or text does not match.'
@@ -79,3 +80,21 @@ class TestAlertsFrameWindowsPage:
             frame_parent_text, frame_child_text = nested_frame_page.check_nested_frame()
             assert frame_parent_text == 'Parent frame', 'The parent frame does not exist'
             assert frame_child_text == 'Child Iframe', 'The child frame does not exist'
+
+    class TestModalDialogsPage(BaseTestPage):
+        @pytest.mark.positive
+        def test_go_modal_dialogs_get_page(self, driver):
+            self.modal_dialogs_get_page(driver)
+            assert "modal-dialogs" in driver.current_url.lower(), 'The transition to the Modal dialogs page failed'
+
+        @pytest.mark.positive
+        @pytest.mark.parametrize('open, title, close, title_result', (
+                (ModalDialogsPage.SmallModalButton, ModalDialogsPage.SmallModalTitle,
+                 ModalDialogsPage.SmallModalCloseButton, "Small Modal"),
+                (ModalDialogsPage.LargeModalButton, ModalDialogsPage.LargeModalTitle,
+                 ModalDialogsPage.LargeModalCloseButton, "Large Modal")))
+        def test_check_modal(self, driver, open, title, close, title_result):
+            modal_dialogs_page = self.modal_dialogs_get_page(driver)
+            modal_title, modal_closed = modal_dialogs_page.check_modal(open, title, close)
+            assert modal_title == title_result, f"The {title_result} dialog was not opened"
+            assert modal_closed is True, f"The {title_result} dialog was not closed"
