@@ -24,3 +24,10 @@ class TestMainPage:
             alerts_frame_windows = self.get_main_page(driver)
             alerts_frame_windows.go_to_alerts_frame_windows()
             assert "alertswindows" in driver.current_url.lower(), "The transition to the Alerts Frame Windows page failed"
+
+    class TestWidgetsMainPage(BaseTestPage):
+        @pytest.mark.positive
+        def test_go_to_widgets_page(self, driver):
+            widgets = self.get_main_page(driver)
+            widgets.go_to_widgets()
+            assert "widgets" in driver.current_url.lower(), "The transition to the Widgets page failed"

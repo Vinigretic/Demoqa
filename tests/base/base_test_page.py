@@ -2,6 +2,7 @@ from page_objects.alerts_frame_windows import *
 from page_objects.elements import *
 from page_objects.forms import *
 from page_objects.main_page import MainPage
+from page_objects.widgets import AccordionPage
 
 
 class BaseTestPage:
@@ -9,6 +10,7 @@ class BaseTestPage:
     FormsPageUrl = "https://demoqa.com/forms"
     AlertsFrameWindowsPageUrl = "https://demoqa.com/alertsWindows"
     MainPageUrl = "https://demoqa.com/"
+    WidgetsPageUrl = "https://demoqa.com/widgets"
 
     # def text_box_page_create(self, driver):
     #     text_box_page = TextBoxPage(driver, self.ElementsPageUrl)
@@ -124,3 +126,14 @@ class BaseTestPage:
         nested_frames_page = self.get_alerts_frame_windows_page(ModalDialogsPage, driver)
         nested_frames_page.go_to_modal_dialogs_page()
         return nested_frames_page
+
+    # Widgets
+    def get_widgets_page(self, page_class, driver):
+        page = page_class(driver, self.WidgetsPageUrl)
+        page.open()
+        return page
+
+    def get_accordion_page(self, driver):
+        accordion_page = self.get_widgets_page(AccordionPage, driver)
+        accordion_page.go_to_accordion_page()
+        return accordion_page
