@@ -2,7 +2,7 @@ from page_objects.alerts_frame_windows import *
 from page_objects.elements import *
 from page_objects.forms import *
 from page_objects.main_page import MainPage
-from page_objects.widgets import AccordionPage
+from page_objects.widgets import *
 
 
 class BaseTestPage:
@@ -137,3 +137,8 @@ class BaseTestPage:
         accordion_page = self.get_widgets_page(AccordionPage, driver)
         accordion_page.go_to_accordion_page()
         return accordion_page
+
+    def get_auto_complete_page(self, driver):
+        auto_complete_page = self.get_widgets_page(AutoCompletePage, driver)
+        auto_complete_page.go_to_auto_complete_page()
+        return auto_complete_page

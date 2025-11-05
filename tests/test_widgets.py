@@ -19,3 +19,28 @@ class TestWidgetsPage:
             assert open_click_result == 'collapse show', 'The accordion is not opened'
             assert content_result in content, 'The accordion content is not present'
             assert close_click_result == 'collapse', 'The accordion is not closed'
+
+    class TestAutoCompletePage(BaseTestPage):
+        @pytest.mark.positive
+        def test_go_to_auto_complete_page(self, driver):
+            self.get_auto_complete_page(driver)
+            assert "auto-complete" in driver.current_url.lower(), 'The transition to the Auto Complete page failed'
+
+        @pytest.mark.parametrize('quantity_color', [1, 3, 5])
+        def test_check_fill_multi_input(self, driver, quantity_color):
+            auto_complete_page = self.get_auto_complete_page(driver)
+            list_color_result, list_color_input = auto_complete_page.check_fill_multi_input(quantity_color)
+            assert list_color_result == list_color_input, ('The colors of the input data do not match the colors of '
+                                                           'the results.')
+
+        @pytest.mark.parametrize('quantity_color, element', ((1, 'single'), (3, 'single'), (5, 'single'), (4, 'all')))
+        def test_check_delete_multi_input(self, driver, quantity_color, element):
+            auto_complete_page = self.get_auto_complete_page(driver)
+            auto_complete_page.check_fill_multi_input(quantity_color)
+            result = auto_complete_page.check_delete_multi_input(element)
+            assert result is True, 'The colors were not deleted'
+
+        def test_check_fill_single_input(self, driver):
+            auto_complete_page = self.get_auto_complete_page(driver)
+            color_result, color = auto_complete_page.check_fill_single_input()
+            assert color_result == color, 'The color was not input'
