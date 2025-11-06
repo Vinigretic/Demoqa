@@ -147,3 +147,13 @@ class BaseTestPage:
         date_picker_page = self.get_widgets_page(DatePickerPage, driver)
         date_picker_page.go_to_date_picker_page()
         return date_picker_page
+
+    def get_slider_page(self, driver):
+        slider_page = self.get_widgets_page(SliderPage, driver)
+        slider_page.go_to_slider_page()
+        return slider_page
+
+    def get_progress_bar_page(self, driver):
+        progress_bar_page = self.get_widgets_page(ProgressBarPage, driver)
+        progress_bar_page.go_to_progress_bar_page()
+        return progress_bar_page

@@ -1,4 +1,5 @@
 import random
+import time
 
 from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
@@ -164,3 +165,38 @@ class DatePickerPage(BasePage):
         self.select_month_or_year_list(date.time, self.DateTimeTimeList)
         date_input_result = self.element_is_presence(self.DateTimeInput).get_attribute('value')
         return date_input_before, date_input_result
+
+
+class SliderPage(BasePage):
+    SliderButton = (By.XPATH, "//span[contains(text(), 'Slider')]")
+    SliderInput = (By.XPATH, "//input[@class='range-slider range-slider--primary']")
+    SliderValue = (By.ID, "sliderValue")
+
+    def go_to_slider_page(self):
+        self.scroll_to_element(self.SliderButton)
+        self.element_is_clickable(self.SliderButton).click()
+
+    def check_change_slider_value(self):
+        value_before = self.element_is_presence(self.SliderValue).get_attribute('value')
+        slider_input = self.element_is_visible(self.SliderInput)
+        self.action_drag_and_drop_by_offset(slider_input, random.randint(0, 100), 0)
+        value_after = self.element_is_presence(self.SliderValue).get_attribute('value')
+        return value_before, value_after
+
+
+class ProgressBarPage(BasePage):
+    ProgressBarButton = (By.XPATH, "//span[contains(text(), 'Progress Bar')]")
+    ProgressBarValue = (By.XPATH, "//div[@class='progress-bar bg-info']")
+    ProgressBarStart = (By.ID, "startStopButton")
+
+    def go_to_progress_bar_page(self):
+        self.scroll_to_element(self.ProgressBarButton)
+        self.element_is_clickable(self.ProgressBarButton).click()
+
+    def check_change_progress_bar(self):
+        value_before = self.element_is_presence(self.ProgressBarValue).text
+        self.element_is_clickable(self.ProgressBarStart).click()
+        time.sleep(random.randint(2, 8))
+        self.element_is_clickable(self.ProgressBarStart).click()
+        value_after = self.element_is_presence(self.ProgressBarValue).text
+        return value_before, value_after
