@@ -142,3 +142,8 @@ class BaseTestPage:
         auto_complete_page = self.get_widgets_page(AutoCompletePage, driver)
         auto_complete_page.go_to_auto_complete_page()
         return auto_complete_page
+
+    def get_date_picker_page(self, driver):
+        date_picker_page = self.get_widgets_page(DatePickerPage, driver)
+        date_picker_page.go_to_date_picker_page()
+        return date_picker_page

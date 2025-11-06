@@ -3,9 +3,11 @@ import random
 from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
 
 from generator.auto_complete_generator import generator_color
+from generator.date_picker_generator import generated_date_time
 from page_objects.base_page import BasePage
 
 
@@ -97,3 +99,68 @@ class AutoCompletePage(BasePage):
         self.element_is_visible(self.SingleInput).send_keys(Keys.ENTER)
         color_result = self.element_is_visible(self.SINGLE_VALUE).text
         return color_result, color
+
+
+class DatePickerPage(BasePage):
+    DatePickerButton = (By.XPATH, "//span[contains(text(), 'Date Picker')]")
+    DateInput = (By.ID, "datePickerMonthYearInput")
+    DateSelectMonth = (By.XPATH, "//select[@class='react-datepicker__month-select']")
+    DateSelectYear = (By.XPATH, "//select[@class='react-datepicker__year-select']")
+    # DateSelectDay = (By.XPATH, f"//div[contains(@class, 'react-datepicker__day react-datepicker__day')]") # --026
+
+    DateTimeInput = (By.ID, "dateAndTimePickerInput")
+    DateTimeMonth = (By.XPATH, "//div[@class='react-datepicker__month-read-view']")
+    DateTimeYear = (By.XPATH, "//div[@class='react-datepicker__year-read-view']")
+    DateTimeMonthList = (By.XPATH, "//div[@class='react-datepicker__month-option']")
+    DateTimeYearList = (By.XPATH, "//div[@class='react-datepicker__year-option']")
+    DateTimeTimeList = (By.XPATH, "//li[@class='react-datepicker__time-list-item ']")
+
+    @staticmethod
+    def get_date_selected_day_locator(day):
+        day_str = f"{int(day):03d}"  # formats 1 → '001', 26 → '026'
+        return (By.XPATH, f"//div[contains(@class, 'react-datepicker__day--{day_str}')]")
+
+    def select_month_or_year(self, date, locator):
+        dropdown = Select(self.element_is_presence(locator))
+        dropdown.select_by_visible_text(date)
+        return dropdown
+
+    def select_month_or_year_list(self, date, locator):
+        elements_list = self.elements_are_presence(locator)
+        for element in elements_list:
+            if element.text == date:
+                self.driver.execute_script("arguments[0].scrollIntoView();", element)
+                element.click()
+                break
+
+    def go_to_date_picker_page(self):
+        self.scroll_to_element(self.DatePickerButton)
+        self.element_is_clickable(self.DatePickerButton).click()
+
+    def check_change_date(self):
+        date = generated_date_time()
+        date_input = self.element_is_clickable(self.DateInput)
+        date_input_before = date_input.get_attribute('value')
+        date_input.click()
+        # dropdown_month = Select(self.element_is_presence(self.DateSelectMonth))
+        # dropdown_month.select_by_visible_text(date.month)
+        # dropdown_year = Select(self.element_is_presence(self.DateSelectYear))
+        # dropdown_year.select_by_visible_text(date.year)
+        self.select_month_or_year(date.month, self.DateSelectMonth)
+        self.select_month_or_year(date.year, self.DateSelectYear)
+        self.element_is_clickable(self.get_date_selected_day_locator(date.day)).click()
+        date_input_result = date_input.get_attribute('value')
+        return date_input_before, date_input_result
+
+    def check_change_date_time(self):
+        date = generated_date_time()
+        date_input_before = self.element_is_presence(self.DateTimeInput).get_attribute('value')
+        self.safe_click(self.DateTimeInput)
+        self.element_is_clickable(self.DateTimeYear).click()
+        self.select_month_or_year_list(date.year, self.DateTimeYearList)
+        self.element_is_clickable(self.DateTimeMonth).click()
+        self.select_month_or_year_list(date.month, self.DateTimeMonthList)
+        self.element_is_clickable(self.get_date_selected_day_locator(date.day)).click()
+        self.select_month_or_year_list(date.time, self.DateTimeTimeList)
+        date_input_result = self.element_is_presence(self.DateTimeInput).get_attribute('value')
+        return date_input_before, date_input_result

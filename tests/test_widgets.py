@@ -44,3 +44,19 @@ class TestWidgetsPage:
             auto_complete_page = self.get_auto_complete_page(driver)
             color_result, color = auto_complete_page.check_fill_single_input()
             assert color_result == color, 'The color was not input'
+
+    class TestDatePickerPage(BaseTestPage):
+        @pytest.mark.positive
+        def test_go_to_date_picker_page(self, driver):
+            self.get_date_picker_page(driver)
+            assert "date-picker" in driver.current_url.lower(), 'The transition to the Date Picker page failed'
+
+        def test_check_change_date(self, driver):
+            date_picker_page = self.get_date_picker_page(driver)
+            date_input_before, date_input_result = date_picker_page.check_change_date()
+            assert date_input_before != date_input_result, 'The date has not been changed'
+
+        def test_check_change_date_time(self, driver):
+            date_picker_page = self.get_date_picker_page(driver)
+            date_input_before, date_input_result = date_picker_page.check_change_date_time()
+            assert date_input_before != date_input_result, 'The date has not been changed'
