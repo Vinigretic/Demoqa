@@ -62,6 +62,11 @@ class BasePage:
         action.drag_and_drop_by_offset(element, x_coords, y_coords)
         action.perform()
 
+    def action_move_to_element(self, element):
+        action = ActionChains(self.driver)
+        action.move_to_element(element)
+        action.perform()
+
     def js_right_click(self, locator, timeout=10):
         element = self.element_is_visible(locator, timeout)
         self.driver.execute_script("arguments[0].dispatchEvent(new MouseEvent('contextmenu', {bubbles: true}));",

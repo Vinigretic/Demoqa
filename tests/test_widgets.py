@@ -102,3 +102,17 @@ class TestWidgetsPage:
             tab_text, expected_text = tabs_page.check_click_tab_and_get_text(tabs)
             assert tab_text is not None, 'The Tab is not clickable'
             assert tab_text.startswith(expected_text), 'The Text does not match'
+
+    class TestToolTipsPage(BaseTestPage):
+        @pytest.mark.positive
+        def test_get_tool_tips_page(self, driver):
+            self.get_tool_tips_page(driver)
+            assert "tool-tips" in driver.current_url.lower(), 'The transition to the Tool Tips page failed'
+
+        @pytest.mark.positive
+        @pytest.mark.parametrize('element', ('button', 'field', 'contrary', 'section'))
+        def test_get_tool_tip_text(self, driver, element):
+            tool_tips_page = self.get_tool_tips_page(driver)
+            text, expected_text = tool_tips_page.get_tool_tip_text(element)
+            assert text, 'The tool tip was not shown'
+            assert expected_text == text, 'The tool tip text does not match'

@@ -202,6 +202,7 @@ class ProgressBarPage(BasePage):
         value_after = self.element_is_presence(self.ProgressBarValue).text
         return value_before, value_after
 
+
 class TabsPage(BasePage):
     TabsButton = (By.XPATH, "//span[contains(text(), 'Tabs')]")
     Tabs = {
@@ -227,7 +228,6 @@ class TabsPage(BasePage):
         }
     }
 
-
     def go_to_tabs_page(self):
         self.scroll_to_element(self.TabsButton)
         self.element_is_clickable(self.TabsButton).click()
@@ -242,23 +242,33 @@ class TabsPage(BasePage):
         return tab_text, self.Tabs[tabs]['expected_text']
 
 
+class ToolTipsPage(BasePage):
+    ToolTipsButton = (By.XPATH, "//span[contains(text(), 'Tool Tips')]")
+    ToolTipText = (By.CSS_SELECTOR, 'div[class="tooltip-inner"]')
+    Elements = {
+        'button': (By.ID, 'toolTipButton'),
+        'field': (By.ID, 'toolTipTextField'),
+        'contrary': (By.XPATH, '//*[.="Contrary"]'),
+        'section': (By.XPATH, '//*[.="1.10.32"]'),
+        'expected_text': {
+            'button': 'You hovered over the Button',
+            'field': 'You hovered over the text field',
+            'contrary': 'You hovered over the Contrary',
+            'section': 'You hovered over the 1.10.32',
+        }
 
+    }
 
+    def go_to_tool_tips_page(self):
+        self.scroll_to_element(self.ToolTipsButton)
+        self.element_is_clickable(self.ToolTipsButton).click()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    def get_tool_tip_text(self, element):
+        try:
+            self.scroll_to_element(self.Elements[element])
+            target = self.element_is_presence(self.Elements[element])
+            self.action_move_to_element(target)
+            WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(self.ToolTipText))
+            return self.element_is_visible(self.ToolTipText).text, self.Elements['expected_text'][element]
+        except TimeoutException:
+            return None, None

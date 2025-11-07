@@ -162,3 +162,8 @@ class BaseTestPage:
         tabs_page = self.get_widgets_page(TabsPage, driver)
         tabs_page.go_to_tabs_page()
         return tabs_page
+
+    def get_tool_tips_page(self, driver):
+        tool_tips_page = self.get_widgets_page(ToolTipsPage, driver)
+        tool_tips_page.go_to_tool_tips_page()
+        return tool_tips_page
