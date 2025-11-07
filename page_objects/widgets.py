@@ -1,6 +1,7 @@
 import random
 import time
 
+from selenium.common import TimeoutException, ElementClickInterceptedException
 from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -200,3 +201,64 @@ class ProgressBarPage(BasePage):
         self.element_is_clickable(self.ProgressBarStart).click()
         value_after = self.element_is_presence(self.ProgressBarValue).text
         return value_before, value_after
+
+class TabsPage(BasePage):
+    TabsButton = (By.XPATH, "//span[contains(text(), 'Tabs')]")
+    Tabs = {
+        'what': {
+            'tab': (By.ID, "demo-tab-what"),
+            'text': (By.XPATH, "//div[@id='demo-tabpane-what']/p"),
+            'expected_text': 'Lorem Ipsum'
+        },
+        'origin': {
+            'tab': (By.ID, "demo-tab-origin"),
+            'text': (By.XPATH, "//div[@id='demo-tabpane-origin']/p"),
+            'expected_text': 'Contrary to popular belief'
+        },
+        'use': {
+            'tab': (By.ID, "demo-tab-use"),
+            'text': (By.XPATH, "//div[@id='demo-tabpane-use']/p"),
+            'expected_text': 'It is a long established fact'
+        },
+        'more': {
+            'tab': (By.ID, "demo-tab-more"),
+            'text': (By.XPATH, "//div[@id='demo-tabpane-more']/p"),
+            'expected_text': 'The more the better'
+        }
+    }
+
+
+    def go_to_tabs_page(self):
+        self.scroll_to_element(self.TabsButton)
+        self.element_is_clickable(self.TabsButton).click()
+
+    def check_click_tab_and_get_text(self, tabs):
+        tab_text = None
+        try:
+            self.element_is_clickable(self.Tabs[tabs]['tab']).click()
+            tab_text = self.element_is_presence(self.Tabs[tabs]['text']).text
+        except (TimeoutException, ElementClickInterceptedException):
+            pass
+        return tab_text, self.Tabs[tabs]['expected_text']
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -157,3 +157,8 @@ class BaseTestPage:
         progress_bar_page = self.get_widgets_page(ProgressBarPage, driver)
         progress_bar_page.go_to_progress_bar_page()
         return progress_bar_page
+
+    def get_tabs_page(self, driver):
+        tabs_page = self.get_widgets_page(TabsPage, driver)
+        tabs_page.go_to_tabs_page()
+        return tabs_page

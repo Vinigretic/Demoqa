@@ -88,3 +88,17 @@ class TestWidgetsPage:
             progress_bar_page = self.get_progress_bar_page(driver)
             value_before, value_after = progress_bar_page.check_change_progress_bar()
             assert value_after != value_before, 'The progress bar value was not changed'
+
+    class TestTabsPage(BaseTestPage):
+        @pytest.mark.positive
+        def test_get_tabs_page(self, driver):
+            self.get_tabs_page(driver)
+            assert "tabs" in driver.current_url.lower(), 'The transition to the Tabs page failed'
+
+        @pytest.mark.positive
+        @pytest.mark.parametrize('tabs', ('what', 'origin', 'use', 'more'))
+        def test_check_click_tab_and_get_text(self, driver, tabs):
+            tabs_page = self.get_tabs_page(driver)
+            tab_text, expected_text = tabs_page.check_click_tab_and_get_text(tabs)
+            assert tab_text is not None, 'The Tab is not clickable'
+            assert tab_text.startswith(expected_text), 'The Text does not match'
