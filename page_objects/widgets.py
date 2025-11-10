@@ -1,7 +1,7 @@
 import random
 import time
 
-from selenium.common import TimeoutException, ElementClickInterceptedException
+from selenium.common import TimeoutException, ElementClickInterceptedException, ElementNotInteractableException
 from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -91,7 +91,7 @@ class AutoCompletePage(BasePage):
                 color.click()
         else:
             self.element_is_clickable(self.MULTI_VALUE_REMOVE_All).click()
-        result = WebDriverWait(self.driver, 10).until(EC.invisibility_of_element_located(self.MULTI_VALUE))
+        result = self.element_is_not_visible(self.MULTI_VALUE)
         return result
 
     def check_fill_single_input(self):
@@ -268,7 +268,27 @@ class ToolTipsPage(BasePage):
             self.scroll_to_element(self.Elements[element])
             target = self.element_is_presence(self.Elements[element])
             self.action_move_to_element(target)
-            WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located(self.ToolTipText))
-            return self.element_is_visible(self.ToolTipText).text, self.Elements['expected_text'][element]
+            text = self.element_is_visible(self.ToolTipText).text
+            return text, self.Elements['expected_text'][element]
         except TimeoutException:
             return None, None
+
+class MenuPage(BasePage):
+    MenuButton = (By.XPATH, "//span[text()='Menu']")
+    MenuLinks = (By.XPATH, "//ul[@id='nav']//li")
+
+    def go_to_menu_page(self):
+        self.scroll_to_element(self.MenuButton)
+        self.element_is_clickable(self.MenuButton).click()
+
+    def get_menu_texts(self):
+        try:
+            menu_links = self.elements_are_presence(self.MenuLinks)
+            text_links = []
+            for link in menu_links:
+                self.driver.execute_script("arguments[0].scrollIntoView();",link)
+                self.action_move_to_element(link)
+                text_links.append(link.text)
+            return text_links
+        except (TimeoutException, ElementNotInteractableException):
+            return []

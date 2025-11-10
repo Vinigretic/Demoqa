@@ -116,3 +116,15 @@ class TestWidgetsPage:
             text, expected_text = tool_tips_page.get_tool_tip_text(element)
             assert text, 'The tool tip was not shown'
             assert expected_text == text, 'The tool tip text does not match'
+
+    class TestMenuPage(BaseTestPage):
+        @pytest.mark.positive
+        def test_get_menu_page(self, driver):
+            self.get_menu_page(driver)
+            assert "menu" in driver.current_url.lower(), 'The transition to the Menu page failed'
+
+        @pytest.mark.positive
+        def test_get_menu_texts(self, driver):
+            menu_page = self.get_menu_page(driver)
+            length = len(menu_page.get_menu_texts())
+            assert length == 8, 'Menu items do not exist or have not been selected'
