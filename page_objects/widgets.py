@@ -1,7 +1,8 @@
 import random
 import time
 
-from selenium.common import TimeoutException, ElementClickInterceptedException, ElementNotInteractableException
+from selenium.common import TimeoutException, ElementClickInterceptedException, ElementNotInteractableException, \
+    NoSuchElementException
 from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -10,6 +11,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 from generator.auto_complete_generator import generator_color
 from generator.date_picker_generator import generated_date_time
+from generator.select_menu_generator import generator_menu
 from page_objects.base_page import BasePage
 
 
@@ -273,6 +275,7 @@ class ToolTipsPage(BasePage):
         except TimeoutException:
             return None, None
 
+
 class MenuPage(BasePage):
     MenuButton = (By.XPATH, "//span[text()='Menu']")
     MenuLinks = (By.XPATH, "//ul[@id='nav']//li")
@@ -286,9 +289,98 @@ class MenuPage(BasePage):
             menu_links = self.elements_are_presence(self.MenuLinks)
             text_links = []
             for link in menu_links:
-                self.driver.execute_script("arguments[0].scrollIntoView();",link)
+                self.driver.execute_script("arguments[0].scrollIntoView();", link)
                 self.action_move_to_element(link)
                 text_links.append(link.text)
             return text_links
         except (TimeoutException, ElementNotInteractableException):
             return []
+
+
+class SelectMenuPage(BasePage):
+    SelectMenuButton = (By.XPATH, "//span[text()='Select Menu']")
+    SelectMenu = {
+        'select_value_menu': {
+            'input': (By.XPATH, "//input[@id='react-select-2-input']"),
+            'text': (By.XPATH, "//div[@id='withOptGroup']//div[@class=' css-1uccc91-singleValue']")
+        },
+        'select_one_menu': {
+            'input': (By.XPATH, "//input[@id='react-select-3-input']"),
+            'text': (By.XPATH, "//div[@id='selectOne']//div[@class=' css-1uccc91-singleValue']")
+        }
+
+    }
+
+    OldStyleSelectMenu = (By.XPATH, "//select[@id='oldSelectMenu']")
+
+    MultiSelectDropDown = (By.XPATH, "//input[@id='react-select-4-input']")
+    MultiSelectDropDownText = (By.XPATH, "//div[@class='css-12jo7m5']")
+    StandardMultiSelect = (By.ID, "cars")
+
+    def go_to_select_menu_page(self):
+        try:
+            self.scroll_to_element(self.SelectMenuButton)
+            self.element_is_clickable(self.SelectMenuButton).click()
+        except TimeoutException:
+            pass
+
+    def get_selected_texts_for_menu(self, type_menu, locator):
+        menu_list = generator_menu()
+        type = {
+            'value': menu_list.value_options_list,
+            'one': menu_list.one_options_list
+        }
+        choice_option_list = type[type_menu]
+        choice_option_text = []
+        for option in choice_option_list:
+            try:
+                self.element_is_presence(self.SelectMenu[locator]['input']).send_keys(option)
+                self.element_is_presence(self.SelectMenu[locator]['input']).send_keys(Keys.ENTER)
+                choice_option_text.append(self.element_is_visible(self.SelectMenu[locator]['text']).text)
+            except TimeoutException:
+                pass
+        return choice_option_text, choice_option_list
+
+    def select_all_and_verify_texts(self):
+        # pairs = [(opt.get_attribute("value"), opt.text) for opt in dropdown.options] # get all select pairs from dom
+        pairs = generator_menu().old_select_menu_list
+        comparisons = []
+        try:
+            dropdown = Select(self.element_is_presence(self.OldStyleSelectMenu))
+            for pair in pairs:
+                try:
+                    dropdown.select_by_value(pair[0])
+                    comparisons.append((dropdown.first_selected_option.text, pair[1]))
+                except NoSuchElementException:
+                    pass
+        except TimeoutException:
+            pass
+        return comparisons, pairs
+
+    def get_selected_text_for_multiselect_menu(self):
+        choice_multiselect_list = generator_menu().multiselect_menu_list
+        dropdown = self.element_is_presence(self.MultiSelectDropDown)
+        for item in choice_multiselect_list:
+            try:
+                dropdown.send_keys(item)
+                dropdown.send_keys(Keys.ENTER)
+            except (TimeoutException, NoSuchElementException):
+                print(f"In multiselect menu an {item} was not chose")
+        choice_dropdown_list = self.elements_are_presence(self.MultiSelectDropDownText)
+        choice_dropdown_text = [item.text for item in choice_dropdown_list]
+        return choice_dropdown_text, choice_multiselect_list
+
+    def get_selected_text_for_select_menu(self):
+        choice_standard_select_list = generator_menu().standard_select_menu_list
+        dropdown = Select(self.element_is_presence(self.StandardMultiSelect))
+        for item in choice_standard_select_list:
+            try:
+                dropdown.select_by_value(item.lower())
+            except (TimeoutException, NoSuchElementException):
+                print(f"In standard multiselect menu an {item} was not chose")
+        choice_dropdown_text = [item.text for item in dropdown.all_selected_options]
+        return choice_dropdown_text, choice_standard_select_list
+
+
+
+

@@ -128,3 +128,37 @@ class TestWidgetsPage:
             menu_page = self.get_menu_page(driver)
             length = len(menu_page.get_menu_texts())
             assert length == 8, 'Menu items do not exist or have not been selected'
+
+    class TestSelectMenuPage(BaseTestPage):
+        @pytest.mark.positive
+        def test_get_select_menu_page(self, driver):
+            self.get_select_menu_page(driver)
+            assert "select-menu" in driver.current_url.lower(), 'The transition to the Selectmenu page failed'
+
+        @pytest.mark.positive
+        @pytest.mark.parametrize('type_meny, locator', (('value', 'select_value_menu'), ('one', 'select_one_menu')))
+        def test_check_select_value_menu(self, driver, type_meny, locator):
+            select_menu_page = self.get_select_menu_page(driver)
+            choice_option_text, choice_option_list = select_menu_page.get_selected_texts_for_menu(type_meny, locator)
+            assert choice_option_text == choice_option_list, 'The text does not match'
+
+        @pytest.mark.positive
+        def test_check_old_select_menu(self, driver):
+            select_menu_page = self.get_select_menu_page(driver)
+            comparisons, pairs = select_menu_page.select_all_and_verify_texts()
+            assert comparisons, 'The Select Menu was not presented'
+            assert len(pairs) == len(comparisons), 'Some option was not presented in the dropdown'
+            for actual_text, expected_text in comparisons:
+                assert actual_text == expected_text, f"Expected '{expected_text}', does not match with '{actual_text}'"
+
+        @pytest.mark.positive
+        def test_multiselect_dropdown_menu(self, driver, request):
+            select_menu_page = self.get_select_menu_page(driver)
+            choice_dropdown_text, choice_multiselect_list = select_menu_page.get_selected_text_for_multiselect_menu()
+            assert choice_dropdown_text == choice_multiselect_list, f'The text does not match in {request.node.name}'
+
+        @pytest.mark.positive
+        def test_standard_select_dropdown_menu(self, driver, request):
+            select_menu_page = self.get_select_menu_page(driver)
+            choice_dropdown_text, choice_standard_select_list = select_menu_page.get_selected_text_for_select_menu()
+            assert choice_dropdown_text == choice_standard_select_list, f'The text does not match in {request.node.name}'

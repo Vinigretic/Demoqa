@@ -172,3 +172,8 @@ class BaseTestPage:
         menu_page = self.get_widgets_page(MenuPage, driver)
         menu_page.go_to_menu_page()
         return menu_page
+
+    def get_select_menu_page(self, driver):
+        select_menu_page = self.get_widgets_page(SelectMenuPage, driver)
+        select_menu_page.go_to_select_menu_page()
+        return select_menu_page
