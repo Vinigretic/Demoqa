@@ -44,7 +44,7 @@ class BasePage:
 
     def scroll_to_element(self, locator, timeout=10):
         element = self.element_is_presence(locator, timeout)
-        self.driver.execute_script("arguments[0].scrollIntoView();",element)
+        self.driver.execute_script("arguments[0].scrollIntoView();", element)
         return element
 
     def action_double_click(self, locator, timeout=10):
@@ -65,6 +65,15 @@ class BasePage:
     def action_move_to_element(self, element):
         action = ActionChains(self.driver)
         action.move_to_element(element)
+        action.perform()
+
+    def action_drag_and_drop_to_element(self, source, target):
+        # scroll to elements
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", source)
+        self.driver.execute_script("arguments[0].scrollIntoView(true);", target)
+
+        action = ActionChains(self.driver)
+        action.drag_and_drop(source, target)
         action.perform()
 
     def js_right_click(self, locator, timeout=10):

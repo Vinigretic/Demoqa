@@ -1,6 +1,7 @@
 from page_objects.alerts_frame_windows import *
 from page_objects.elements import *
 from page_objects.forms import *
+from page_objects.interactions import SortablePage
 from page_objects.main_page import MainPage
 from page_objects.widgets import *
 
@@ -11,7 +12,9 @@ class BaseTestPage:
     AlertsFrameWindowsPageUrl = "https://demoqa.com/alertsWindows"
     MainPageUrl = "https://demoqa.com/"
     WidgetsPageUrl = "https://demoqa.com/widgets"
+    InteractionsPageUrl = "https://demoqa.com/interaction"
 
+    # region important
     # def text_box_page_create(self, driver):
     #     text_box_page = TextBoxPage(driver, self.ElementsPageUrl)
     #     text_box_page.open()
@@ -28,7 +31,7 @@ class BaseTestPage:
     #     check_box_page.open()
     #     check_box_page.go_to_check_box()
     #     return check_box_page
-
+    # endregion
     def get_main_page(self, driver):
         page = MainPage(driver, self.MainPageUrl)
         page.open()
@@ -177,3 +180,14 @@ class BaseTestPage:
         select_menu_page = self.get_widgets_page(SelectMenuPage, driver)
         select_menu_page.go_to_select_menu_page()
         return select_menu_page
+
+    # Interactions
+    def get_interactions_page(self, page_class, driver):
+        page = page_class(driver, self.InteractionsPageUrl)
+        page.open()
+        return page
+
+    def get_sortable_page(self, driver):
+        sortable_page = self.get_interactions_page(SortablePage, driver)
+        sortable_page.go_to_sortable_page()
+        return sortable_page

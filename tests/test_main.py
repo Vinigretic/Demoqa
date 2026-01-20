@@ -31,3 +31,10 @@ class TestMainPage:
             widgets = self.get_main_page(driver)
             widgets.go_to_widgets()
             assert "widgets" in driver.current_url.lower(), "The transition to the Widgets page failed"
+
+    class TestInteractionsMainPage(BaseTestPage):
+        @pytest.mark.positive
+        def test_go_to_interactions_page(self, driver):
+            interactions = self.get_main_page(driver)
+            interactions.go_to_interactions()
+            assert "interaction" in driver.current_url.lower(), "The transition to the Interactions page failed"
