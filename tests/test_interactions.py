@@ -23,3 +23,27 @@ class TestInteractionsPage:
             assert items_list_after != items_list_before, 'The order of list was not changed'
             assert items_list_after.index(items_change[0].text) != items_list_before.index(
                 items_change[0].text), 'The order of list was not changed'
+
+    class TestSelectablePage(BaseTestPage):
+        @pytest.mark.positive
+        def test_go_to_selectable_page(self, driver):
+            self.get_selectable_page(driver)
+            assert "selectable" in driver.current_url.lower(), 'The transition to the Selectable page failed'
+
+        @pytest.mark.positive
+        @pytest.mark.parametrize(
+            "count, locator_button, locator_items, locator_items_active",
+            [
+                (1, 'list_button', 'list_item', 'list_item_active'),
+                (2, 'list_button', 'list_item', 'list_item_active'),
+                (3, 'list_button', 'list_item', 'list_item_active'),
+                (1, 'grid_button', 'grid_item', 'grid_item_active'),
+                (2, 'grid_button', 'grid_item', 'grid_item_active'),
+                (3, 'grid_button', 'grid_item', 'grid_item_active'),
+            ]
+        )
+        def test_selected_items_match_active(self, driver, count, locator_button, locator_items, locator_items_active):
+            selectable_page = self.get_selectable_page(driver)
+            clicked_items = selectable_page.click_random_items(count, locator_button, locator_items)
+            active_items = selectable_page.get_active_items(locator_items_active)
+            assert clicked_items == active_items, 'Elements were not selected'

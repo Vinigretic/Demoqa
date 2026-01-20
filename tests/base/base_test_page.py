@@ -1,7 +1,7 @@
 from page_objects.alerts_frame_windows import *
 from page_objects.elements import *
 from page_objects.forms import *
-from page_objects.interactions import SortablePage
+from page_objects.interactions import SortablePage, SelectablePage
 from page_objects.main_page import MainPage
 from page_objects.widgets import *
 
@@ -191,3 +191,8 @@ class BaseTestPage:
         sortable_page = self.get_interactions_page(SortablePage, driver)
         sortable_page.go_to_sortable_page()
         return sortable_page
+
+    def get_selectable_page(self, driver):
+        selectable_page = self.get_interactions_page(SelectablePage, driver)
+        selectable_page.go_to_selectable_page()
+        return selectable_page
