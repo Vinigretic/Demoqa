@@ -73,3 +73,44 @@ class SelectablePage(BasePage):
         list_items = self.elements_are_presence(self.Locators[locator_items_active])
         active_items = [item.text for item in list_items]
         return sorted(active_items)
+
+
+class ResizablePage(BasePage):
+    ResizableButton = (By.XPATH, "//span[contains(text(), 'Resizable')]")
+    ResizableBox = (By.ID, "resizableBoxWithRestriction")
+    ResizableBoxHandle = (By.XPATH,
+                          "//div[@id='resizableBoxWithRestriction']//span[@class='react-resizable-handle react-resizable-handle-se']")
+    Resizable = (By.ID, "resizable")
+    ResizableHandle = (By.XPATH,
+                       "//div[@id='resizable']//span[@class='react-resizable-handle react-resizable-handle-se']")
+
+    def go_to_resizable_page(self):
+        self.safe_click(self.ResizableButton)
+
+    def get_size(self):
+        element = self.element_is_presence(self.ResizableBox)
+        size = element.size
+        print(size)
+        return size['width'], size['height']
+
+    def resize(self, x_offset, y_offset):
+        handle = self.scroll_to_element(self.ResizableBoxHandle)
+        self.action_drag_and_drop_by_offset(handle, x_offset, y_offset)
+
+    def resize_to_maximum(self):
+        self.resize(500, 300)
+        return self.get_size()
+
+    def resize_to_minimum(self):
+        handle = self.scroll_to_element(self.ResizableBoxHandle)
+        while True:
+            width, height = self.get_size()
+            print(width, height)
+            if width <= 150 and height <= 150:
+                break
+            try:
+                self.action_drag_and_drop_by_offset(handle, -10, -10)
+            except Exception:
+                break
+
+        return self.get_size()

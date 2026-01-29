@@ -47,3 +47,30 @@ class TestInteractionsPage:
             clicked_items = selectable_page.click_random_items(count, locator_button, locator_items)
             active_items = selectable_page.get_active_items(locator_items_active)
             assert clicked_items == active_items, 'Elements were not selected'
+
+    class TestResizablePage(BaseTestPage):
+        @pytest.mark.positive
+        def test_initial_size(self, driver):
+            resizable_page = self.get_resizable_page(driver)
+            width, height = resizable_page.get_size()
+            assert (width, height) == (200, 200), "The initial size should be 200x200 px"
+
+        @pytest.mark.positive
+        def test_resize_to_maximum(self, driver):
+            resizable_page = self.get_resizable_page(driver)
+            width, height = resizable_page.resize_to_maximum()
+            assert (width, height) == (500, 300), "The max size should be 500x300 px"
+
+        @pytest.mark.positive
+        def test_resize_to_minimum(self, driver):
+            resizable_page = self.get_resizable_page(driver)
+            width, height = resizable_page.resize_to_minimum()
+            assert (width, height) == (150, 150), "The min size should be 150x150 px"
+
+        @pytest.mark.positive
+        def test_resize_dynamic(self, driver):
+            resizable_page = self.get_resizable_page(driver)
+            resizable_page.resize(50, 50)
+            width, height = resizable_page.get_size()
+            assert 150 <= width <= 500 and 150 <= height <= 300, \
+                "The size should stay within acceptable limits"
