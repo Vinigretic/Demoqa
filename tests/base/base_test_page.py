@@ -1,7 +1,7 @@
 from page_objects.alerts_frame_windows import *
 from page_objects.elements import *
 from page_objects.forms import *
-from page_objects.interactions import SortablePage, SelectablePage, ResizablePage
+from page_objects.interactions import SortablePage, SelectablePage, ResizablePage, Droppable
 from page_objects.main_page import MainPage
 from page_objects.widgets import *
 
@@ -201,3 +201,8 @@ class BaseTestPage:
         resizable_page = self.get_interactions_page(ResizablePage, driver)
         resizable_page.go_to_resizable_page()
         return resizable_page
+
+    def get_droppable_page(self, driver):
+        droppable_page = self.get_interactions_page(Droppable, driver)
+        droppable_page.go_to_droppable_page()
+        return droppable_page

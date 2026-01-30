@@ -114,3 +114,55 @@ class ResizablePage(BasePage):
                 break
 
         return self.get_size()
+
+
+class Droppable(BasePage):
+    DroppableButton = (By.XPATH, "//span[contains(text(), 'Droppable')]")
+    # Simple
+    SimpleTab = (By.CSS_SELECTOR, "a[id='droppableExample-tab-simple']")
+    DragMeSimple = (By.CSS_SELECTOR, 'div[id="draggable"]')
+    DropHereSimple = (By.CSS_SELECTOR, '#simpleDropContainer #droppable')
+
+    # Accept
+    AcceptTab = (By.CSS_SELECTOR, "a[id='droppableExample-tab-accept']")
+    Acceptable = (By.CSS_SELECTOR, 'div[id="acceptable"]')
+    NotAcceptable = (By.CSS_SELECTOR, 'div[id="notAcceptable"]')
+    DropHereAccept = (By.CSS_SELECTOR, '#acceptDropContainer #droppable')
+
+    # Prevent Propogation
+    PreventTab = (By.CSS_SELECTOR, "a[id='droppableExample-tab-preventPropogation']")
+    NotGreedyDropBoxText = (By.CSS_SELECTOR, 'div[id="notGreedyDropBox"] p:nth-child(1)')
+    NotGreedyInnerBox = (By.CSS_SELECTOR, 'div[id="notGreedyInnerDropBox"]')
+    GreedyDropBoxText = (By.CSS_SELECTOR, 'div[id="greedyDropBox"] p:nth-child(1)')
+    GreedyInerBox = (By.CSS_SELECTOR, 'div[id="greedyDropBoxInner"]')
+    DragMePrevent = (By.CSS_SELECTOR, '#ppDropContainer #dragBox')
+
+    # Revert Draggable
+    RevertTab = (By.CSS_SELECTOR, "a[id='droppableExample-tab-revertable']")
+    WillRevert = (By.CSS_SELECTOR, 'div[id="revertable"]')
+    NotRevert = (By.CSS_SELECTOR, 'div[id="notRevertable"]')
+    DropHereRevert = (By.CSS_SELECTOR, '#revertableDropContainer #droppable')
+
+    def go_to_droppable_page(self):
+        self.safe_click(self.DroppableButton)
+
+    def get_drop_simple_text(self):
+        self.element_is_visible(self.SimpleTab).click()
+        drag_div = self.element_is_visible(self.DragMeSimple)
+        drop_div = self.element_is_visible(self.DropHereSimple)
+        self.action_drag_and_drop_to_element(drag_div, drop_div)
+        return drop_div.text.lower().strip()
+
+    def get_drop_not_accept_text(self):
+        self.element_is_visible(self.AcceptTab).click()
+        not_acceptable_div = self.element_is_visible(self.NotAcceptable)
+        drop_div = self.element_is_visible(self.DropHereAccept)
+        self.action_drag_and_drop_to_element(not_acceptable_div, drop_div)
+        return drop_div.text.lower().strip()
+
+    def get_drop_accept_text(self):
+        self.element_is_visible(self.AcceptTab).click()
+        acceptable_div = self.element_is_visible(self.Acceptable)
+        drop_div = self.element_is_visible(self.DropHereAccept)
+        self.action_drag_and_drop_to_element(acceptable_div, drop_div)
+        return drop_div.text.lower().strip()

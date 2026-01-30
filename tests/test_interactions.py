@@ -74,3 +74,22 @@ class TestInteractionsPage:
             width, height = resizable_page.get_size()
             assert 150 <= width <= 500 and 150 <= height <= 300, \
                 "The size should stay within acceptable limits"
+
+    class TestDroppablePage(BaseTestPage):
+        @pytest.mark.positive
+        def test_go_to_droppable_page(self, driver):
+            self.get_droppable_page(driver)
+            assert "droppable" in driver.current_url.lower(), 'The transition to the Droppable page failed'
+
+        @pytest.mark.positive
+        def test_simple_droppable(self, driver):
+            droppable_page = self.get_droppable_page(driver)
+            assert droppable_page.get_drop_simple_text() == 'dropped!', "The elements was dropped"
+
+        @pytest.mark.positive
+        def test_accept_droppable(self, driver):
+            droppable_page = self.get_droppable_page(driver)
+            not_accept = droppable_page.get_drop_not_accept_text()
+            accept = droppable_page.get_drop_accept_text()
+            assert not_accept == 'drop here', "The dropped element was accepted"
+            assert accept == 'dropped!', "The dropped element was not accepted"
