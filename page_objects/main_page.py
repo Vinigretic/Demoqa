@@ -1,3 +1,4 @@
+import allure
 from selenium.webdriver.common.by import By
 
 from page_objects.base_page import BasePage
@@ -12,17 +13,27 @@ class MainPage(BasePage):
     Interactions = (By.XPATH,
                     "//div[contains(@class, 'card mt-4 top-card') and .//h5[contains(text(), 'Interactions')]]")
 
+    @allure.step("Navigate: Elements")
     def go_to_elements(self):
-        self.safe_click(self.Elements)
+        with allure.step("Click on 'Elements' card"):
+            self.safe_click(self.Elements)
 
+    @allure.step("Navigate: Forms")
     def go_to_forms(self):
-        self.safe_click(self.Forms)
+        with allure.step("Click on 'Forms' card"):
+            self.safe_click(self.Forms)
 
+    @allure.step("Navigate: Alerts, Frame & Windows")
     def go_to_alerts_frame_windows(self):
-        self.safe_click(self.AlertsFrameWindows)
+        with allure.step("Click on 'Alerts, Frame & Windows' card"):
+            self.safe_click(self.AlertsFrameWindows)
 
+    @allure.step("Navigate: Widgets")
     def go_to_widgets(self):
-        self.safe_click(self.Widgets)
+        with allure.step("Click on 'Widgets' card"):
+            self.safe_click(self.Widgets)
 
+    @allure.step("Navigate: Interactions")
     def go_to_interactions(self):
-        self.safe_click(self.Interactions)
+        with allure.step("Click on 'Interactions' card"):
+            self.safe_click(self.Interactions)

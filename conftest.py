@@ -1,11 +1,15 @@
+import os
 import shutil
 import tempfile
 
+import allure
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
+
+from utils.allure_utils import attach_url, attach_screenshot, attach_page_source, attach_browser_logs
 
 
 @pytest.fixture(scope="function")
@@ -37,9 +41,52 @@ def driver_for_download_file():
     browser.maximize_window()
     yield browser, download_dir
     browser.quit()
-    shutil.rmtree(download_dir) # standard python module for working with files and directories, rmtree, deletes the entire folder structure.
+    shutil.rmtree(
+        download_dir)  # standard python module for working with files and directories, rmtree, deletes the entire folder structure.
 
 
+@pytest.hookimpl(hookwrapper=True)
+def pytest_runtest_makereport(item, call):
+    outcome = yield
+    result = outcome.get_result()
 
+    driver = None
+    download_dir = None
 
+    if "driver" in item.funcargs:
+        driver = item.funcargs["driver"]
+    elif "driver_for_download_file" in item.funcargs:
+        browser, download_dir = item.funcargs["driver_for_download_file"]
+        driver = browser
 
+    if not driver:
+        return
+
+    # Attach only once per test phase to avoid duplicates (setup/call/teardown)
+    if result.when == "setup" and result.failed:
+        with allure.step("Attach artifacts on FAIL (setup)"):
+            attach_url(driver, "URL (setup FAIL)")
+            attach_screenshot(driver, "Screenshot (setup FAIL)")
+            attach_browser_logs(driver, "Browser logs (setup FAIL)")
+        return
+
+    # On FAIL - full set of artifacts
+    if result.when == "call" and result.failed:
+        with allure.step(f"Attach artifacts on FAIL ({result.when})"):
+            attach_url(driver, "Final URL")
+            attach_screenshot(driver, f"Screenshot on FAIL ({result.when})")
+            attach_page_source(driver, f"Page Source on FAIL ({result.when})")
+            attach_browser_logs(driver, f"Browser logs on FAIL ({result.when})")
+
+            if download_dir and os.path.exists(download_dir):
+                try:
+                    files = os.listdir(download_dir)
+                    allure.attach("\n".join(files), "Downloaded files", allure.attachment_type.TEXT)
+                except Exception:
+                    pass
+        return
+
+    # On PASS - light typing (e.g. URL only)
+    if result.when == "call" and result.passed:
+        with allure.step(f"Attach artifacts on PASS ({result.when})"):
+            attach_url(driver, "Final URL")
