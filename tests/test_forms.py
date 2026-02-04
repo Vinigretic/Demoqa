@@ -1,15 +1,25 @@
+import allure
 import pytest
 
 from generator.forms_generator import *
 from tests.base.base_test_page import BaseTestPage
 
 
+@allure.suite("Forms")
 class TestFormsPage(BaseTestPage):
+    @allure.feature("Practice Form")
+    @allure.story("Navigation")
+    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.title("Navigate to Forms page")
     @pytest.mark.positive
     def test_go_to_forms_page(self, driver):
         self.practice_form_get_page(driver)
         assert "automation-practice-form" in driver.current_url.lower(), 'The transition to the Forms page failed'
 
+    @allure.feature("Fill Student Registration Form")
+    @allure.story("Form filling")
+    @allure.severity(allure.severity_level.CRITICAL)
+    @allure.title("Fill in all form fields")
     @pytest.mark.positive
     def test_full_student_form(self, driver):
         forms_page = self.practice_form_get_page(driver)
