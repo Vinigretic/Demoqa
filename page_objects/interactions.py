@@ -1,4 +1,5 @@
 import random
+import allure
 
 from selenium.webdriver.common.by import By
 
@@ -16,25 +17,35 @@ class SortablePage(BasePage):
                       "//div[@class='grid-container mt-4']//div[@class='list-group-item list-group-item-action']"),
     }
 
+    @allure.step("Go to Sortable page")
     def go_to_sortable_page(self):
         self.safe_click(self.SortableButton)
 
+    @allure.step("Get sortable items text for '{locator_button}'/{locator_items}")
     def get_items_text(self, locator_button, locator_items):
-        self.element_is_visible(self.Locators[locator_button]).click()
-        sortable_items = self.elements_are_presence(self.Locators[locator_items])
-        return [item.text for item in sortable_items]
+        with allure.step(f"Switch to tab '{locator_button}'"):
+            self.element_is_visible(self.Locators[locator_button]).click()
+        with allure.step(f"Get items by locator '{locator_items}'"):
+            sortable_items = self.elements_are_presence(self.Locators[locator_items])
+            return [item.text for item in sortable_items]
 
+    @allure.step("Change order for '{locator_button}'/{locator_items}")
     def change_list_orders(self, locator_button, locator_items):
-        items_list_before = self.get_items_text(locator_button, locator_items)
-        items_change = random.sample(self.elements_are_presence(self.Locators[locator_items]), k=2)
-        self.action_drag_and_drop_to_element(items_change[0], items_change[1])
-        items_list_after = self.get_items_text(locator_button, locator_items)
+        with allure.step("Get items order before drag-and-drop"):
+            items_list_before = self.get_items_text(locator_button, locator_items)
+        with allure.step("Select two random items to swap"):
+            items_change = random.sample(self.elements_are_presence(self.Locators[locator_items]), k=2)
+        with allure.step(f"Drag '{items_change[0].text}' in '{items_change[1].text}'"):
+            self.action_drag_and_drop_to_element(items_change[0], items_change[1])
+        with allure.step("Get items order after drag-and-drop"):
+            items_list_after = self.get_items_text(locator_button, locator_items)
         return items_list_before, items_change, items_list_after
 
 
 class SelectablePage(BasePage):
     SelectableButton = (By.XPATH, "//span[contains(text(), 'Selectable')]")
 
+    @allure.step("Go to Selectable page")
     def go_to_selectable_page(self):
         self.safe_click(self.SelectableButton)
 
@@ -47,32 +58,44 @@ class SelectablePage(BasePage):
         'grid_item_active': (By.XPATH, "//li[@class='list-group-item active list-group-item-action']"),
     }
 
+    @allure.step("Click {count} random items in '{locator_button}'/{locator_items}")
     def click_random_items(self, count, locator_button, locator_items):
-        try:
-            self.element_is_visible(self.Locators[locator_button]).click()
-        except Exception as e:
-            raise RuntimeError(f"Failed to click item: {e}")
+        with allure.step(f"Switch to tab '{locator_button}'"):
+            try:
+                self.element_is_visible(self.Locators[locator_button]).click()
+            except Exception as e:
+                raise RuntimeError(f"Failed to click item: {e}")
 
-        all_items = self.elements_are_presence(self.Locators[locator_items])
-        if len(all_items) < count:
-            raise ValueError(f"Requested {count} items, but only {len(all_items)} found")
-        list_items = random.sample(all_items, k=count)
+        with allure.step(f"Collect all selectable items by '{locator_items}'"):
+            all_items = self.elements_are_presence(self.Locators[locator_items])
+
+        with allure.step("Validate enough items are present"):
+            if len(all_items) < count:
+                raise ValueError(f"Requested {count} items, but only {len(all_items)} found")
+
+        with allure.step(f"Randomly choose {count} items"):
+            list_items = random.sample(all_items, k=count)
 
         clicked_items = []
         for item in list_items:
             try:
-                self.driver.execute_script("arguments[0].scrollIntoView(true);",
-                                           item)
-                self.element_is_clickable(item).click()
-                clicked_items.append(item.text)
+                with allure.step(f"Scroll and click item '{item.text}'"):
+                    self.driver.execute_script("arguments[0].scrollIntoView();", item)
+                    self.element_is_clickable(item).click()
+                    clicked_items.append(item.text)
             except Exception as e:
-                raise RuntimeError(f"Failed to click item {item.text}: {e}")
-        return sorted(clicked_items)
+                raise RuntimeError(f"Failed to click item '{item.text}': {e}")
 
+        with allure.step("Sort clicked items (for stable comparison)"):
+            return sorted(clicked_items)
+
+    @allure.step("Get active items for '{locator_items_active}'")
     def get_active_items(self, locator_items_active):
-        list_items = self.elements_are_presence(self.Locators[locator_items_active])
-        active_items = [item.text for item in list_items]
-        return sorted(active_items)
+        with allure.step("Get active elements"):
+            list_items = self.elements_are_presence(self.Locators[locator_items_active])
+            active_items = [item.text for item in list_items]
+        with allure.step("Sort active items (for stable comparison)"):
+            return sorted(active_items)
 
 
 class ResizablePage(BasePage):
@@ -84,36 +107,52 @@ class ResizablePage(BasePage):
     ResizableHandle = (By.XPATH,
                        "//div[@id='resizable']//span[@class='react-resizable-handle react-resizable-handle-se']")
 
+    @allure.step("Go to Resizable page")
     def go_to_resizable_page(self):
         self.safe_click(self.ResizableButton)
 
+    @allure.step("Get resizable box size")
     def get_size(self):
-        element = self.element_is_presence(self.ResizableBox)
-        size = element.size
-        print(size)
-        return size['width'], size['height']
+        with allure.step("Get element size (width/height)"):
+            element = self.element_is_presence(self.ResizableBox)
+            size = element.size
+            return size['width'], size['height']
 
+    @allure.step("Resize by offsets x={x_offset}, y={y_offset}")
     def resize(self, x_offset, y_offset):
-        handle = self.scroll_to_element(self.ResizableBoxHandle)
-        self.action_drag_and_drop_by_offset(handle, x_offset, y_offset)
+        with allure.step("Scroll to resize handle"):
+            handle = self.scroll_to_element(self.ResizableBoxHandle)
+        with allure.step("Drag handle by offsets"):
+            self.action_drag_and_drop_by_offset(handle, x_offset, y_offset)
 
+    @allure.step("Resize to maximum and return size")
     def resize_to_maximum(self):
-        self.resize(500, 300)
-        return self.get_size()
+        with allure.step("Resize to large offsets (attempt max)"):
+            self.resize(500, 300)
+        with allure.step("Read size after resize"):
+            return self.get_size()
 
+    @allure.step("Resize to minimum and return size")
     def resize_to_minimum(self):
-        handle = self.scroll_to_element(self.ResizableBoxHandle)
-        while True:
-            width, height = self.get_size()
-            print(width, height)
-            if width <= 150 and height <= 150:
-                break
-            try:
-                self.action_drag_and_drop_by_offset(handle, -10, -10)
-            except Exception:
-                break
+        with allure.step("Scroll to resize handle"):
+            handle = self.scroll_to_element(self.ResizableBoxHandle)
 
-        return self.get_size()
+        with allure.step("Compress until minimum reached (<=150x150) or drag fails"):
+            while True:
+                width, height = self.get_size()
+                if width <= 150 and height <= 150:
+                    with allure.step(f"[INFO] Minimum reached: {width}x{height}"):
+                        pass
+                    break
+                try:
+                    self.action_drag_and_drop_by_offset(handle, -10, -10)
+                except Exception as exc:
+                    with allure.step(f"[INFO] Stop compressing due to exception: {type(exc).__name__}: {exc}"):
+                        pass
+                    break
+
+        with allure.step("Get final size"):
+            return self.get_size()
 
 
 class Droppable(BasePage):
@@ -143,26 +182,42 @@ class Droppable(BasePage):
     NotRevert = (By.CSS_SELECTOR, 'div[id="notRevertable"]')
     DropHereRevert = (By.CSS_SELECTOR, '#revertableDropContainer #droppable')
 
+    @allure.step("Go to Droppable page")
     def go_to_droppable_page(self):
         self.safe_click(self.DroppableButton)
 
+    @allure.step("Drag and drop (Simple) and get drop text")
     def get_drop_simple_text(self):
-        self.element_is_visible(self.SimpleTab).click()
-        drag_div = self.element_is_visible(self.DragMeSimple)
-        drop_div = self.element_is_visible(self.DropHereSimple)
-        self.action_drag_and_drop_to_element(drag_div, drop_div)
-        return drop_div.text.lower().strip()
+        with allure.step("Open 'Simple' tab"):
+            self.element_is_visible(self.SimpleTab).click()
+        with allure.step("Find draggable and droppable elements"):
+            drag_div = self.element_is_visible(self.DragMeSimple)
+            drop_div = self.element_is_visible(self.DropHereSimple)
+        with allure.step("Drag 'Drag me' into 'Drop here'"):
+            self.action_drag_and_drop_to_element(drag_div, drop_div)
+        with allure.step("Get drop area text"):
+            return drop_div.text.lower().strip()
 
+    @allure.step("Drag not acceptable element and get drop text")
     def get_drop_not_accept_text(self):
-        self.element_is_visible(self.AcceptTab).click()
-        not_acceptable_div = self.element_is_visible(self.NotAcceptable)
-        drop_div = self.element_is_visible(self.DropHereAccept)
-        self.action_drag_and_drop_to_element(not_acceptable_div, drop_div)
-        return drop_div.text.lower().strip()
+        with allure.step("Open 'Accept' tab"):
+            self.element_is_visible(self.AcceptTab).click()
+        with allure.step("Find not acceptable and drop elements"):
+            not_acceptable_div = self.element_is_visible(self.NotAcceptable)
+            drop_div = self.element_is_visible(self.DropHereAccept)
+        with allure.step("Drag not acceptable into drop area"):
+            self.action_drag_and_drop_to_element(not_acceptable_div, drop_div)
+        with allure.step("Get drop area text"):
+            return drop_div.text.lower().strip()
 
+    @allure.step("Drag acceptable element and get drop text")
     def get_drop_accept_text(self):
-        self.element_is_visible(self.AcceptTab).click()
-        acceptable_div = self.element_is_visible(self.Acceptable)
-        drop_div = self.element_is_visible(self.DropHereAccept)
-        self.action_drag_and_drop_to_element(acceptable_div, drop_div)
-        return drop_div.text.lower().strip()
+        with allure.step("Open 'Accept' tab"):
+            self.element_is_visible(self.AcceptTab).click()
+        with allure.step("Find acceptable and drop elements"):
+            acceptable_div = self.element_is_visible(self.Acceptable)
+            drop_div = self.element_is_visible(self.DropHereAccept)
+        with allure.step("Drag acceptable into drop area"):
+            self.action_drag_and_drop_to_element(acceptable_div, drop_div)
+        with allure.step("Get drop area text"):
+            return drop_div.text.lower().strip()
