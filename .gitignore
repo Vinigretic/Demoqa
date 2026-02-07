@@ -1,0 +1,33 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# Virtual environment
+.venv/
+env/
+venv/
+
+# PyCharm project files
+.idea/
+
+# Test and coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+coverage.xml
+*.cover
+*.log
+
+# pytest cache
+.pytest_cache/
+
+# Environment variables
+.env
+*.env
+
+# OS-specific
+.DS_Store
+Thumbs.db
