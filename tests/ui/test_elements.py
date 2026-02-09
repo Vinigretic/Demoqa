@@ -4,8 +4,9 @@ import random
 import allure
 import pytest
 
-from data_tests.text_box_data import *
-from generator.text_box_generator import *
+from data_tests.text_box_data import full_name_categories, address_cases
+from generator.text_box_generator import person_all_fields, person_partial, person_missing, person_email_validation, \
+    person_empty, person_full_name_validation, person_current_address_validation, person_permanent_address_validation
 from generator.upload_download_generator import FileFactory
 from page_objects.elements import RadioButtonPage, LinksPage
 from tests.base.base_test_page import BaseTestPage

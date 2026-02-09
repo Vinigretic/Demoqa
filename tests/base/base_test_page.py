@@ -1,9 +1,12 @@
-from page_objects.alerts_frame_windows import *
-from page_objects.elements import *
-from page_objects.forms import *
+from page_objects.alerts_frame_windows import BrowserWindowsPage, AlertsPage, FramesPage, NestedFramesPage, \
+    ModalDialogsPage
+from page_objects.elements import TextBoxPage, CheckBoxPage, RadioButtonPage, WebTablePage, ButtonsPage, LinksPage, \
+    UploadDownloadPage, DynamicPropertiesPage
+from page_objects.forms import FormsPage
 from page_objects.interactions import SortablePage, SelectablePage, ResizablePage, Droppable
 from page_objects.main_page import MainPage
-from page_objects.widgets import *
+from page_objects.widgets import AccordionPage, AutoCompletePage, DatePickerPage, SliderPage, ProgressBarPage, TabsPage, \
+    ToolTipsPage, MenuPage, SelectMenuPage
 
 
 class BaseTestPage:

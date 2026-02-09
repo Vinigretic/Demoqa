@@ -1,7 +1,7 @@
 import allure
 import pytest
 
-from generator.forms_generator import *
+from generator.forms_generator import full_student_form_fields
 from tests.base.base_test_page import BaseTestPage
 
 
