@@ -4,7 +4,7 @@ import random
 import allure
 import pytest
 
-from data_tests.text_box_data import full_name_categories, address_cases
+from data_tests.text_box_data import full_name_categories, address_cases, email_categories
 from generator.text_box_generator import person_all_fields, person_partial, person_missing, person_email_validation, \
     person_empty, person_full_name_validation, person_current_address_validation, person_permanent_address_validation
 from generator.upload_download_generator import FileFactory
@@ -90,7 +90,9 @@ class TestElementsPage:
             page.text_box_submit_form(person)
 
             # The form does not send and the block does not appear
-            assert page.is_result_block_visible(), f"The Form was sent with empty fields."
+            # assert page.is_result_block_visible(), f"The Form was sent with empty fields."
+            result_class = page.get_result_block_class()
+            assert 'border' not in result_class, "Form was submitted with empty fields"
 
     @allure.feature("TextBox email field")
     class TestTextBoxPageEmailField(BaseTestPage):
@@ -104,7 +106,8 @@ class TestElementsPage:
             page = self.text_box_get_page(driver)
             page.text_box_submit_form(person)
 
-            assert not page.is_email_field_invalid(), f"The Email - {valid_email} was not processed as valid."
+            result_class = page.get_email_field_class()
+            assert "field-error" in result_class, f"The Email - {valid_email} was not processed as valid."
 
         @pytest.mark.negative
         @pytest.mark.parametrize("invalid_email",
@@ -132,7 +135,8 @@ class TestElementsPage:
             page = self.text_box_get_page(driver)
             page.text_box_submit_form(person)
 
-            assert page.is_result_full_name_visible(), f"The Full name - {valid_full_name} was not processed as valid."
+            assert page.is_element_visible(page.CreatedName), \
+                f"The Full name - {valid_full_name} was not processed as valid."
 
         @pytest.mark.negative
         @pytest.mark.parametrize("invalid_full_name", full_name_categories['invalid'])
@@ -144,7 +148,7 @@ class TestElementsPage:
             page = self.text_box_get_page(driver)
             page.text_box_submit_form(person)
 
-            assert not page.is_result_full_name_visible(), \
+            assert not page.is_element_visible(page.CreatedName), \
                 f"The Full name - {invalid_full_name} was not processed as invalid."
 
     @allure.feature("TextBox current address field")
@@ -159,7 +163,7 @@ class TestElementsPage:
             page = self.text_box_get_page(driver)
             page.text_box_submit_form(person)
 
-            assert page.is_result_current_address_visible(), \
+            assert page.is_element_visible(page.CurrentAddress), \
                 f"The Current address - {valid_current_address} was not processed as valid."
 
         @pytest.mark.negative
@@ -172,7 +176,7 @@ class TestElementsPage:
             page = self.text_box_get_page(driver)
             page.text_box_submit_form(person)
 
-            assert not page.is_result_current_address_visible(), \
+            assert not page.is_element_visible(page.CurrentAddress), \
                 f"The Current address - {invalid_current_address} was not processed as invalid."
 
     @allure.feature("TextBox permanent address field")
@@ -187,7 +191,7 @@ class TestElementsPage:
             page = self.text_box_get_page(driver)
             page.text_box_submit_form(person)
 
-            assert page.is_result_permanent_address_visible(), \
+            assert page.is_element_visible(page.PermanentAddress), \
                 f"The Permanent address - {valid_permanent_address} was not processed as valid."
 
         @pytest.mark.negative
@@ -200,7 +204,7 @@ class TestElementsPage:
             page = self.text_box_get_page(driver)
             page.text_box_submit_form(person)
 
-            assert not page.is_result_permanent_address_visible(), \
+            assert not page.is_element_visible(page.PermanentAddress), \
                 f"The Permanent address - {invalid_permanent_address} was not processed as invalid."
 
     @allure.feature("Check box page")

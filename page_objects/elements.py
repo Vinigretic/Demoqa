@@ -62,26 +62,26 @@ class TextBoxPage(BasePage):
 
         with allure.step("Get name"):
             try:
-                # created_full_name = self.element_is_presence(self.CreatedName).text.split(':')[1]
-                created_full_name = self.driver.find_element(*self.CreatedName).text.split(':')[1]
+                created_full_name = self.element_is_presence(self.CreatedName).text.split(':')[1]
+                # created_full_name = self.driver.find_element(*self.CreatedName).text.split(':')[1]
             except (TimeoutException, NoSuchElementException):
                 pass
         with allure.step("Get email"):
             try:
-                # created_email = self.element_is_presence(self.CreatedEmail).text.split(':')[1]
-                created_email = self.driver.find_element(*self.CreatedEmail).text.split(':')[1]
+                created_email = self.element_is_presence(self.CreatedEmail).text.split(':')[1]
+                # created_email = self.driver.find_element(*self.CreatedEmail).text.split(':')[1]
             except (TimeoutException, NoSuchElementException):
                 pass
         with allure.step("Get current address"):
             try:
-                # created_current_address = self.element_is_visible(self.CreatedCurrentAddress).text.split(':')[1]
-                created_current_address = self.driver.find_element(*self.CreatedCurrentAddress).text.split(':')[1]
+                created_current_address = self.element_is_visible(self.CreatedCurrentAddress).text.split(':')[1]
+                # created_current_address = self.driver.find_element(*self.CreatedCurrentAddress).text.split(':')[1]
             except (TimeoutException, NoSuchElementException):
                 pass
         with allure.step("Get permanent address"):
             try:
-                # created_permanent_address = self.element_is_presence(self.CreatedPermanentAddress).text.split(':')[1]
-                created_permanent_address = self.driver.find_element(*self.CreatedPermanentAddress).text.split(':')[1]
+                created_permanent_address = self.element_is_presence(self.CreatedPermanentAddress).text.split(':')[1]
+                # created_permanent_address = self.driver.find_element(*self.CreatedPermanentAddress).text.split(':')[1]
             except (TimeoutException, NoSuchElementException):
                 pass
             return created_full_name, created_email, created_current_address, created_permanent_address
@@ -97,35 +97,17 @@ class TextBoxPage(BasePage):
         # return created_full_name, created_email, created_current_address, created_permanent_address
 
     @allure.step("Check result block visibility")
-    def is_result_block_visible(self):
-        created_text_block = self.driver.find_element(*self.CreatedTextBlock)
-        return 'border' not in created_text_block.get_attribute('class')
+    def get_result_block_class(self):
+        return self.element_is_visible(self.CreatedTextBlock).get_attribute('class')
 
     @allure.step("Checking if the email field is invalid")
-    def is_email_field_invalid(self):
-        email = self.element_is_visible(self.Email)
-        return "field-error" in email.get_attribute('class')
+    def get_email_field_class(self):
+        return self.element_is_visible(self.Email).get_attribute("class")
 
-    @allure.step("Checking the visibility of the result: name")
-    def is_result_full_name_visible(self):
+    @allure.step("Checking the visibility of the result: {locator}")
+    def is_element_visible(self, locator):
         try:
-            self.driver.find_element(*self.CreatedName)
-            return True
-        except NoSuchElementException:
-            return False
-
-    @allure.step("Checking the visibility of the result: current address")
-    def is_result_current_address_visible(self):
-        try:
-            self.driver.find_element(*self.CurrentAddress)
-            return True
-        except NoSuchElementException:
-            return False
-
-    @allure.step("Checking the visibility of the result: permanent address")
-    def is_result_permanent_address_visible(self):
-        try:
-            self.driver.find_element(*self.PermanentAddress)
+            self.element_is_visible(locator)
             return True
         except NoSuchElementException:
             return False
