@@ -106,7 +106,7 @@ class TestElementsPage:
             page.text_box_submit_form(person)
 
             result_class = page.get_email_field_class()
-            assert "field-error" in result_class, f"The Email - {valid_email} was not processed as valid."
+            assert not "field-error" in result_class, f"The Email - {valid_email} was not processed as valid."
 
         @pytest.mark.negative
         @pytest.mark.parametrize("invalid_email",
@@ -120,7 +120,8 @@ class TestElementsPage:
             page.text_box_submit_form(person)
 
             # The email field should be highlighted (for ex., class 'field-error')
-            assert page.is_email_field_invalid(), f"The Email - {invalid_email} was not processed as invalid."
+            result_class = page.get_email_field_class()
+            assert "field-error" in result_class, f"The Email - {invalid_email} was not processed as invalid."
 
     @allure.feature("TextBox full name field")
     class TestTextBoxPageFullNameField(BaseTestPage):
