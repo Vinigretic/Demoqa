@@ -21,13 +21,9 @@ class TestFormsPage(BaseTestPage):
     @allure.severity(allure.severity_level.CRITICAL)
     @allure.title("Fill in all form fields")
     @pytest.mark.positive
-    def test_full_student_form(self, driver):
+    def test_full_student_form(self, driver, student_person):
         forms_page = self.practice_form_get_page(driver)
-        person = full_student_form_fields()
-        try:
-            forms_page.full_student_form(person)
-            result = forms_page.form_result()
-            assert (f"{person.first_name} {person.last_name}", person.email) == (
-                result[0], result[1]), 'The form has not been filled'
-        finally:
-            person.delete_file(person.picture)
+        forms_page.full_student_form(student_person)
+        result = forms_page.form_result()
+        assert (f"{student_person.first_name} {student_person.last_name}", student_person.email) == (
+            result[0], result[1]), 'The form has not been filled'

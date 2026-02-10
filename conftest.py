@@ -9,6 +9,8 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
 
+from generator.forms_generator import full_student_form_fields
+from generator.upload_download_generator import FileFactory
 from utils.allure_utils import attach_url, attach_screenshot, attach_page_source, attach_browser_logs
 
 
@@ -43,6 +45,22 @@ def driver_for_download_file():
     browser.quit()
     shutil.rmtree(
         download_dir)  # standard python module for working with files and directories, rmtree, deletes the entire folder structure.
+
+
+@pytest.fixture
+def student_person():
+    person = full_student_form_fields()
+    yield person
+    person.delete_file(person.picture)
+
+
+@pytest.fixture
+def temp_file(request):
+    method_name = request.param
+    create_method = getattr(FileFactory, request.param)
+    file_name = create_method()
+    yield file_name, method_name
+    FileFactory.delete_file(file_name)
 
 
 @pytest.hookimpl(hookwrapper=True)

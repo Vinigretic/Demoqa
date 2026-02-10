@@ -7,7 +7,6 @@ import pytest
 from data_tests.text_box_data import full_name_categories, address_cases, email_categories
 from generator.text_box_generator import person_all_fields, person_partial, person_missing, person_email_validation, \
     person_empty, person_full_name_validation, person_current_address_validation, person_permanent_address_validation
-from generator.upload_download_generator import FileFactory
 from page_objects.elements import RadioButtonPage, LinksPage
 from tests.base.base_test_page import BaseTestPage
 
@@ -407,21 +406,18 @@ class TestElementsPage:
 
         @allure.story("Upload file")
         @allure.severity(allure.severity_level.NORMAL)
-        @pytest.mark.parametrize("method_name", ("create_temp_txt", "create_temp_json", "create_temp_csv"))
-        def test_upload_file(self, driver, method_name):
-            allure.dynamic.title(f"Upload {method_name} file and check the file name")
+        @pytest.mark.parametrize("temp_file", ("create_temp_txt", "create_temp_json", "create_temp_csv"), indirect=True)
+        # indirect=True - the parameter goes to the fixture, not to the test
+        def test_upload_file(self, driver, temp_file):
+            file, method = temp_file
+            allure.dynamic.title(f"Upload {method} file and check the file name")
             upload_download_page = self.upload_download_get_page(driver)
-            create_method = getattr(FileFactory, method_name)
-            file_name = create_method()
-            try:
-                # uploaded_file_path = upload_download_page.upload_file(file_name).split("\\")[-1]
-                # assert uploaded_file_path == file_name.split("\\")[-1], f"The file {file_name} was not uploaded"
-                uploaded_file_path = upload_download_page.upload_file(file_name)
-                assert os.path.basename(uploaded_file_path) == os.path.basename(file_name), \
-                    f"The file {file_name} was not uploaded"
 
-            finally:
-                FileFactory.delete_file(file_name)
+            # uploaded_file_path = upload_download_page.upload_file(file_name).split("\\")[-1]
+            # assert uploaded_file_path == file_name.split("\\")[-1], f"The file {file_name} was not uploaded"
+            uploaded_file_path = upload_download_page.upload_file(file)
+            assert os.path.basename(uploaded_file_path) == os.path.basename(file), \
+                f"The file {file} was not uploaded"
 
         @allure.story("Download file")
         @allure.severity(allure.severity_level.NORMAL)
