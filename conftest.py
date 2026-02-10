@@ -99,9 +99,16 @@ def pytest_runtest_makereport(item, call):
             if download_dir and os.path.exists(download_dir):
                 try:
                     files = os.listdir(download_dir)
-                    allure.attach("\n".join(files), "Downloaded files", allure.attachment_type.TEXT)
-                except Exception:
-                    pass
+                    if files:
+                        allure.attach("\n".join(files), "Downloaded files",
+                                      attachment_type=allure.attachment_type.TEXT)
+                    else:
+                        allure.attach("No files downloaded", "Download Status",
+                                      attachment_type=allure.attachment_type.TEXT)
+                except OSError as e:
+                    allure.attach(f"Failed to list downloads: {str(e)}",
+                                  "Download Error",
+                                  attachment_type=allure.attachment_type.TEXT)
         return
 
     # On PASS - light typing (e.g. URL only)
