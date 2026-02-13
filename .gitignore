@@ -19,6 +19,9 @@ htmlcov/
 .coverage
 coverage.xml
 *.cover
+
+# Logs
+logs/
 *.log
 
 # pytest cache
