@@ -1,3 +1,4 @@
+import os
 from typing import Any, Optional
 
 from _pytest.reports import TestReport
@@ -53,6 +54,14 @@ def handle_common_test(item: Any, call: CallInfo[Any], result: TestReport) -> No
 
 def create_chrome_driver(options: Options) -> webdriver.Chrome:
     """Create and return a Chrome WebDriver instance with given options."""
-    browser = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
-    browser.maximize_window()
+    headless = os.getenv("HEADLESS")
+    if headless == "true":
+        options.add_argument("--headless=new")
+
+    selenium_url = os.getenv("SELENIUM_REMOTE_URL")
+    if selenium_url:
+        browser = webdriver.Remote(command_executor=selenium_url, options=options)
+    else:
+        browser = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
+        browser.maximize_window()
     return browser

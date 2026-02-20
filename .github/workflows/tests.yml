@@ -1,0 +1,117 @@
+name: UI + API tests (Remote Selenium) + Allure Report
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  ui-tests:
+    name: UI tests (Remote Selenium)
+    runs-on: ubuntu-latest
+
+    services:
+      selenium:
+        image: selenium/standalone-chrome:latest
+        ports:
+          - 4444:4444
+        options: >-
+          --shm-size=2g
+          --health-cmd="curl -f http://localhost:4444/status || exit 1"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Create venv & install dependencies
+        run: |
+          python -m venv .venv
+          . .venv/bin/activate
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run UI tests and collect allure results
+        env:
+          SELENIUM_REMOTE_URL: http://localhost:4444/wd/hub
+          HEADLESS: "true"
+        run: |
+          . .venv/bin/activate
+          pytest tests/ui/test_main.py --alluredir=allure-results-ui
+
+      - name: Upload allure-results (UI)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-ui
+          path: allure-results-ui
+          if-no-files-found: ignore
+
+  report-and-deploy:
+    name: Build Allure HTML + Deploy to GitHub Pages
+    if: always()
+    needs: [ ui-tests ]
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Download allure-results (UI)
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-results-ui
+          path: _artifacts/allure-results-ui
+
+      - name: Merge allure results
+        run: |
+          mkdir -p allure-results
+          #          cp -R _artifacts/allure-results-api/. allure-results/ || true
+          cp -R _artifacts/allure-results-ui/. allure-results/ || true
+          ls -la allure-results || true
+
+      - name: Set up Java (for Allure CLI)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Install Allure CLI
+        run: |
+          curl -fsSL -o allure.tgz \
+            https://github.com/allure-framework/allure2/releases/download/2.36.0/allure-2.36.0.tgz
+          tar -xzf allure.tgz
+          sudo mv allure-2.36.0 /opt/allure
+          sudo ln -sf /opt/allure/bin/allure /usr/local/bin/allure
+          allure --version
+
+      - name: Generate Allure HTML report
+        run: |
+          allure generate allure-results -o allure-report --clean
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: allure-report
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

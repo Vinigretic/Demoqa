@@ -14,10 +14,13 @@ from utils.test_handlers import create_chrome_driver
 
 
 @pytest.fixture(scope="function")
-def driver() -> webdriver.Chrome:
-    """Provide a Chrome WebDriver instance for UI tests."""
+def driver() -> webdriver.Remote:
+    """Provide a Chrome WebDriver."""
     options = Options()
-    # options.add_argument("--headless=new")  # enable if headless mode is needed
+    options.add_argument("--disable-gpu")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+
     browser = create_chrome_driver(options)
     yield browser
     browser.quit()
@@ -31,6 +34,10 @@ def driver_for_download_file() -> tuple[webdriver.Chrome, str]:
     # C:\Users\vbaka\AppData\Local\Temp\tmpd2q8c5gr
 
     options = Options()
+    options.add_argument("--disable-gpu")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+
     prefs = {
         "download.default_directory": download_dir,
         "download.prompt_for_download": False,
@@ -38,7 +45,6 @@ def driver_for_download_file() -> tuple[webdriver.Chrome, str]:
         "safebrowsing.enabled": True
     }
     options.add_experimental_option("prefs", prefs)
-    # options.add_argument("--headless=new")
     browser = create_chrome_driver(options)
     yield browser, download_dir
     browser.quit()
