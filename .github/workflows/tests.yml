@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -32,6 +32,7 @@ jobs:
           --health-interval=10s
           --health-timeout=5s
           --health-retries=30
+          --health-start-period=15s
 
     steps:
       - name: Checkout
@@ -75,42 +76,38 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Download allure-results (UI)
         uses: actions/download-artifact@v4
         with:
           name: allure-results-ui
           path: _artifacts/allure-results-ui
+        continue-on-error: true
 
       - name: Merge allure results
         run: |
           mkdir -p allure-results
-          #          cp -R _artifacts/allure-results-api/. allure-results/ || true
           cp -R _artifacts/allure-results-ui/. allure-results/ || true
           ls -la allure-results || true
 
-      - name: Set up Java (for Allure CLI)
-        uses: actions/setup-java@v4
+      - name: Generate Allure report
+        uses: simple-elf/allure-report-action@v1.7
+        if: always()
         with:
-          distribution: temurin
-          java-version: "17"
-
-      - name: Install Allure CLI
-        run: |
-          curl -fsSL -o allure.tgz \
-            https://github.com/allure-framework/allure2/releases/download/2.36.0/allure-2.36.0.tgz
-          tar -xzf allure.tgz
-          sudo mv allure-2.36.0 /opt/allure
-          sudo ln -sf /opt/allure/bin/allure /usr/local/bin/allure
-          allure --version
-
-      - name: Generate Allure HTML report
-        run: |
-          allure generate allure-results -o allure-report --clean
+          github_repo: ${{ github.repository }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          allure_results: allure-results
+          allure_history: allure-history
+          keep_reports: 20
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: allure-report
+          path: allure-history   # simple-elf action places the finished report here
 
       - name: Deploy to GitHub Pages
         id: deployment
