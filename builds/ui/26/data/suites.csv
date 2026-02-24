@@ -1,0 +1,6 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","2264","Navigate to Elements page","tests.ui","Tue Feb 24 12:44:25 GMT 2026","passed","Tue Feb 24 12:44:27 GMT 2026","TestMainPage > TestElementsMainPage","Main Page","",""
+"","2117","Navigate to Alerts Frame Windows page","tests.ui","Tue Feb 24 12:44:30 GMT 2026","passed","Tue Feb 24 12:44:32 GMT 2026","TestMainPage > TestAlertsFrameWindowsMainPage","Main Page","",""
+"","2117","Navigate to Forms page","tests.ui","Tue Feb 24 12:44:28 GMT 2026","passed","Tue Feb 24 12:44:30 GMT 2026","TestMainPage > TestFormsMainPage","Main Page","",""
+"","2060","Navigate to Interactions page","tests.ui","Tue Feb 24 12:44:35 GMT 2026","passed","Tue Feb 24 12:44:37 GMT 2026","TestMainPage > TestInteractionsMainPage","Main Page","",""
+"","2060","Navigate to Widgets page","tests.ui","Tue Feb 24 12:44:33 GMT 2026","passed","Tue Feb 24 12:44:35 GMT 2026","TestMainPage > TestWidgetsMainPage","Main Page","",""

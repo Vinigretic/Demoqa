@@ -1,0 +1,4 @@
+2026-02-24 12:44:35.418 | STEP     | page_objects.base_page:open:26 - Go to: https://demoqa.com/
+2026-02-24 12:44:37.441 | WARNING  | page_objects.base_page:safe_click:63 - Element ('xpath', "//div[contains(@class, 'card mt-4 top-card') and .//h5[contains(text(), 'Interactions')]]") is blocked, execute JS‑click
+2026-02-24 12:44:37.478 | INFO     | utils.test_handlers:handle_ui_test:40 - UI Test tests/ui/test_main.py::TestMainPage::TestInteractionsMainPage::test_go_to_interactions_page PASSED 
+ ****************************************************************************************************
