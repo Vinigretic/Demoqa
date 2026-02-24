@@ -1,0 +1,6 @@
+2026-02-24 13:28:47.871 | STEP     | test_forms:test_go_to_forms_page:21 - Start test: Navigate to Forms page
+2026-02-24 13:28:47.872 | STEP     | page_objects.base_page:open:26 - Go to: https://demoqa.com/forms
+2026-02-24 13:28:49.047 | STEP     | page_objects.forms:go_to_practice_form:41 - Navigate to Practice Form
+2026-02-24 13:28:49.623 | STEP     | test_forms:test_go_to_forms_page:25 - Successfully navigated to Forms page
+2026-02-24 13:28:49.624 | INFO     | utils.test_handlers:handle_ui_test:40 - UI Test tests/ui/test_forms.py::TestFormsPage::test_go_to_forms_page PASSED 
+ ****************************************************************************************************

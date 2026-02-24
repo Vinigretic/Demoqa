@@ -1,0 +1,10 @@
+2026-02-24 13:28:50.008 | STEP     | test_forms:test_full_student_form:35 - Start test: Fill in all form fields
+2026-02-24 13:28:50.009 | STEP     | page_objects.base_page:open:26 - Go to: https://demoqa.com/forms
+2026-02-24 13:28:51.106 | STEP     | page_objects.forms:go_to_practice_form:41 - Navigate to Practice Form
+2026-02-24 13:28:51.606 | STEP     | page_objects.forms:full_student_form:48 - Start filling student form
+2026-02-24 13:28:53.392 | WARNING  | page_objects.base_page:safe_click:63 - Element ('xpath', "//label[@for='hobbies-checkbox-2']") is blocked, execute JS‑click
+2026-02-24 13:28:53.827 | STEP     | page_objects.forms:full_student_form:98 - Submit form
+2026-02-24 13:28:54.946 | WARNING  | page_objects.base_page:safe_click:63 - Element ('xpath', "//button[@id='submit']") is blocked, execute JS‑click
+2026-02-24 13:28:55.249 | STEP     | test_forms:test_full_student_form:42 - Form successfully filled and validated
+2026-02-24 13:28:55.250 | INFO     | utils.test_handlers:handle_ui_test:40 - UI Test tests/ui/test_forms.py::TestFormsPage::test_full_student_form PASSED 
+ ****************************************************************************************************
