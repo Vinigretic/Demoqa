@@ -56,7 +56,7 @@ jobs:
           HEADLESS: "true"
         run: |
           . .venv/bin/activate
-          pytest tests/ui/test_main.py --alluredir=allure-results-ui
+          pytest tests/ui/test_forms.py --alluredir=allure-results-ui
 
       - name: Upload allure-results (UI)
         if: always()
@@ -71,15 +71,19 @@ jobs:
     if: always()
     needs: [ ui-tests ]
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Checkout gh-pages (for history)
+        uses: actions/checkout@v4
+        continue-on-error: true
+        with:
+          ref: gh-pages
+          path: gh-pages
 
       - name: Download allure-results (UI)
         uses: actions/download-artifact@v4
@@ -95,20 +99,21 @@ jobs:
           ls -la allure-results || true
 
       - name: Generate Allure report
-        uses: simple-elf/allure-report-action@v1.7
+        uses: andgineer/allure-report@v3.6
+        id: allure-report
         if: always()
         with:
-          github_repo: ${{ github.repository }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          allure_results: allure-results
-          allure_history: allure-history
-          keep_reports: 20
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: allure-history   # simple-elf action places the finished report here
+          allure-results: allure-results
+          website: gh-pages
+          reports-site-path: builds/ui
+          max-reports: 20
 
       - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+        uses: peaceiris/actions-gh-pages@v4
+        if: ${{ always() && steps.allure-report.outcome == 'success' }}
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: gh-pages
+          keep_files: true
+
