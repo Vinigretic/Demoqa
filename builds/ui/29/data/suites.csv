@@ -1,0 +1,3 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"Verify filling and submitting the student form.","5414","Fill in all form fields","tests.ui","Wed Feb 25 10:48:14 GMT 2026","passed","Wed Feb 25 10:48:19 GMT 2026","TestFormsPage","Forms","",""
+"Verify navigation to the Forms page.","2134","Navigate to Forms page","tests.ui","Wed Feb 25 10:48:11 GMT 2026","passed","Wed Feb 25 10:48:13 GMT 2026","TestFormsPage","Forms","",""
