@@ -117,3 +117,7 @@ jobs:
           publish_dir: gh-pages
           keep_files: true
 
+    environment:
+      name: allure-report
+      url: ${{ steps.allure-report.outputs.report-url }}
+
